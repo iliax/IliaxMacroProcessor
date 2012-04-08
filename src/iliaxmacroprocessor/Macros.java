@@ -1,13 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package iliaxmacroprocessor;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import static com.google.common.base.Preconditions.*;
 
 /**
@@ -16,16 +15,20 @@ import static com.google.common.base.Preconditions.*;
  */
 public class Macros {
 
-    public static final Macros ROOT_MACROS = new Macros("root", MacrosContext.ROOT_MACROS_CONTEXT);
+    public static final Macros ROOT_MACROS = new Macros("root", MacrosContext.ROOT_MACROS_CONTEXT) {
 
+        @Override
+        public List<Macros> getNestedMacroses() {
+            return FakeList.FAKE_LIST;
+        }
+    };
     /** unique! */
     private String _name;
-
     private List<String> _strings = new ArrayList<String>();
-
     private List<Macros> _nestedMacroses = new ArrayList<Macros>();
-
     private MacrosContext _context;
+    /** int- относительный номер строки от начала макроса */
+    private Map<String, Integer> _labels = new HashMap<String, Integer>();
 
     public Macros(String _name, MacrosContext macrosContext) {
         this._name = checkNotNull(_name);
@@ -60,15 +63,14 @@ public class Macros {
         return _context;
     }
 
-
     @Override
     public boolean equals(Object obj) {
-        if(! (obj instanceof Macros)){
+        if (!(obj instanceof Macros)) {
             return false;
         }
 
-        Macros m = (Macros)obj;
-        return m._name.equals(m._name);
+        Macros m = (Macros) obj;
+        return m._name.equals(_name);
     }
 
     @Override
@@ -78,6 +80,33 @@ public class Macros {
         return hash;
     }
 
+    @Override
+    public String toString() {
+        String str = "MACROS " + _name + " []";
 
+        str += "\n";
+        for (String s : _strings) {
+            str += " " + s + "\n";
+        }
+        str += "MEND" + " nested: ";
+        if (_nestedMacroses.isEmpty()) {
+            str += "N0NE";
+        } else {
+            for (Macros m : _nestedMacroses) {
+                str += m.getName() + "[] ";
+            }
+        }
 
+        return str;
+    }
+
+    private static class FakeList extends ArrayList {
+
+        static final FakeList FAKE_LIST = new FakeList();
+
+        @Override
+        public boolean add(Object e) {
+            return true;
+        }
+    }
 }

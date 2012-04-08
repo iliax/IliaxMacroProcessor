@@ -9,7 +9,7 @@ public class MacrosContext {
     public static final MacrosContext ROOT_MACROS_CONTEXT = new MacrosContext(null){
 
         @Override
-        public Macros getParentMacros() {
+        public Macros getMacros() {
             return Macros.ROOT_MACROS;
         }
 
@@ -21,7 +21,7 @@ public class MacrosContext {
         this.parentMacros = parentMacros;
     }
 
-    public Macros getParentMacros() {
+    public Macros getMacros() {
         return parentMacros;
     }
 
@@ -33,7 +33,7 @@ public class MacrosContext {
         }
 
         MacrosContext that = (MacrosContext) obj;
-        return getParentMacros().equals(that.getParentMacros());
+        return getMacros().equals(that.getMacros());
     }
 
     @Override

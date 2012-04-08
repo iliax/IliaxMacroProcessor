@@ -25,12 +25,13 @@ public class MainForm extends javax.swing.JFrame {
     private GuiConfig _guiConfig;
     private TextDataHolder _textDataHolder;
 
+    private MacroProcessor macroProcessor;
     /** Creates new form MainForm */
     public MainForm() {
 
         initComponents();
 
-        _guiConfig = new GuiConfig(_sourseTextField);
+        _guiConfig = new GuiConfig(_sourseTextField, _outTextField);
     }
 
     /** This method is called from within the constructor to
@@ -45,23 +46,44 @@ public class MainForm extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         _sourseTextField = new javax.swing.JTextPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        _outTextField = new javax.swing.JTextPane();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        start1stScanButt = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         _openMenuItem = new javax.swing.JMenuItem();
         _saveMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jScrollPane1.setViewportView(_sourseTextField);
 
-        jScrollPane2.setViewportView(jTextPane1);
+        jScrollPane2.setViewportView(_outTextField);
 
         jLabel1.setText("IN:");
 
         jLabel2.setText("OUT:");
+
+        start1stScanButt.setText("start 1st scan");
+        start1stScanButt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                start1stScanButtActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("start 2nd scan");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("File");
 
@@ -93,18 +115,22 @@ public class MainForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addContainerGap(311, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
-                        .addGap(12, 12, 12))))
+                        .addComponent(start1stScanButt)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -114,10 +140,14 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(76, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(start1stScanButt)
+                    .addComponent(jButton1))
+                .addContainerGap())
         );
 
         pack();
@@ -156,6 +186,32 @@ public class MainForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event__saveMenuItemActionPerformed
 
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+    
+    }//GEN-LAST:event_formWindowClosed
+
+    private void start1stScanButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_start1stScanButtActionPerformed
+        if(_textDataHolder == null){
+            JOptionPane.showMessageDialog(this, "no data to analyse");
+            return;
+        }
+
+        _outTextField.setText("");
+
+        macroProcessor = new MacroProcessor(_guiConfig, _textDataHolder.getStrings(TextDataHolder.NO_EMPTY_STRINGS));
+        macroProcessor.start1stScan();
+        
+    }//GEN-LAST:event_start1stScanButtActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(macroProcessor == null){
+            //TODO do smth here!
+            return ;
+        }
+
+        macroProcessor.start2ndScan();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -186,14 +242,16 @@ public class MainForm extends javax.swing.JFrame {
         };
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem _openMenuItem;
+    private javax.swing.JTextPane _outTextField;
     private javax.swing.JMenuItem _saveMenuItem;
     private javax.swing.JTextPane _sourseTextField;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JButton start1stScanButt;
     // End of variables declaration//GEN-END:variables
 }

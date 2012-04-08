@@ -1,6 +1,31 @@
-123
-234
-345
-456
+qwe qweqw begin
+MACRO m1 []
 
-123123
+m2 []
+ololo0
+
+MACRO m2 []
+ ololo_1
+ ololo_2
+	
+ m3 []
+ MACRO m3 []
+  olololo
+  ololo
+ MEND
+
+ ololo_3
+MEND
+
+MACRO m23 []
+ooooo
+MEND
+
+ololo2
+ololo3
+
+MEND
+qwqw end
+
+m1 []
+m2 []

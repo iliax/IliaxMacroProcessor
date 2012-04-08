@@ -25,8 +25,14 @@ public class MacroProcessorTest {
     public void getLexems(){
         List<String> tst = ImmutableList.of("a", "b", "c");
 
-        List<String> tst2 = MacroProcessor.getLexems("a b c");
+        List<String> tst2 = MacroProcessor.getLexems("a b   c");
 
         assertTrue(tst.equals(tst2));
+    }
+
+    @Test
+    public void isLabel(){
+        assertTrue(MacroProcessor.isLabel("L1:"));
+        assertFalse(MacroProcessor.isLabel("L1"));
     }
 }
