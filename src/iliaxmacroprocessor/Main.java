@@ -30,5 +30,7 @@ public class Main {
         LOG.info("start");
 
         MainForm.main(args);
+
+        LOG.info("end");
     }
 }
