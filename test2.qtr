@@ -1,31 +1,13 @@
-qwe qweqw begin
-MACRO m1 [x1 x2 x3=3]
+MACRO m1 [x1]
 
-m2 []
-ololo0
-
-MACRO m2 []
- ololo_1
- ololo_2
-	
- m3 []
- MACRO m3 []
-  olololo
-  ololo
+ MACRO m2 []
+   x1
  MEND
 
- ololo_3
-MEND
+ test = x1 
 
-MACRO m23 []
-ooooo
-MEND
-
-ololo2
-ololo3
-
-MEND
-qwqw end
-
-m1 []
 m2 []
+
+MEND
+
+m1 [123]

@@ -1,9 +1,8 @@
 
 package iliaxmacroprocessor;
 
-import com.google.common.collect.Lists;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,24 +14,35 @@ import static com.google.common.base.Preconditions.*;
  */
 public class Macros {
 
-    public static final Macros ROOT_MACROS = new Macros("root", MacrosContext.ROOT_MACROS_CONTEXT) {
+    public static final Macros ROOT_MACROS = new Macros("root", null) {
 
         @Override
         public List<Macros> getNestedMacroses() {
             return FakeList.FAKE_LIST;
         }
+
+        @Override
+        public Macros getParentMacros() {
+            return Macros.ROOT_MACROS;
+        }
+
     };
+    
     /** unique! */
     private String _name;
     private List<String> _strings = new ArrayList<String>();
     private List<Macros> _nestedMacroses = new ArrayList<Macros>();
-    private MacrosContext _context;
+
+    private Macros _parentMacros;
+
+    private VariablesStore _variables = new VariablesStore();
+
     /** int- относительный номер строки от начала макроса */
     private Map<String, Integer> _labels = new HashMap<String, Integer>();
 
-    public Macros(String _name, MacrosContext macrosContext) {
+    public Macros(String _name, Macros parent) {
         this._name = checkNotNull(_name);
-        this._context = checkNotNull(macrosContext);
+        this._parentMacros = parent;
     }
 
     public void setName(String _name) {
@@ -59,9 +69,15 @@ public class Macros {
         return _strings;
     }
 
-    public MacrosContext getContext() {
-        return _context;
+    public VariablesStore getVariables() {
+        return _variables;
     }
+
+    public Macros getParentMacros() {
+        return _parentMacros;
+    }
+
+    
 
     @Override
     public boolean equals(Object obj) {
@@ -82,7 +98,7 @@ public class Macros {
 
     @Override
     public String toString() {
-        String str = "MACROS " + _name + " []";
+        String str = "MACROS " + _name + " [...]";
 
         str += "\n";
         for (String s : _strings) {
@@ -97,7 +113,8 @@ public class Macros {
             }
         }
 
-        str += "\n vars: " + getContext().getVariablesStore();
+        str += "\n" + getVariables().toString();
+       
 
         return str;
     }
@@ -111,4 +128,136 @@ public class Macros {
             return true;
         }
     }
+
+
+
+    public class VariablesStore {
+
+        private Map<String, Variable> _variables = new LinkedHashMap<String, Variable>();
+
+        public VariablesStore() {
+        }
+
+        private List<String> varsSequence = new ArrayList<String>();
+
+        public int varSeqCount(){
+            return varsSequence.size();
+        }
+
+        public List<String> getVarsSequence() {
+            return varsSequence;
+        }
+        
+
+        public boolean addVariable(String varName){
+            if(_variables.containsKey(varName)){
+                return false;
+            } else {
+                varsSequence.add(varName);
+                _variables.put(varName, new Variable(varName));
+                return true;
+            }
+        }
+
+        public String getVariableVAlFromGlobalContext(String varName){
+            if(_variables.get(varName) != null){
+                return _variables.get(varName).getValue();
+            } else {
+                if(!Macros.this.getParentMacros().equals(ROOT_MACROS)){
+                    return Macros.this.getParentMacros().getVariables().getVariableVAlFromGlobalContext(varName);
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        public void clearVarsStore(){
+            _variables = new HashMap<String, Variable>();
+        }
+
+        public boolean addKeyVariable(String varName, String defVal){
+            if(_variables.containsKey(varName)){
+                return false;
+            } else {
+                _variables.put(varName, new Variable(varName, defVal, defVal));
+                return true;
+            }
+        }
+
+        public String getVariableValue(String varName){
+            return _variables.get(varName).getValue();
+        }
+
+        public boolean isVariableExists(String var){
+            return _variables.containsKey(var);
+        }
+
+        public boolean isVariableKeyVar(String var){
+            return _variables.get(var).getDefaultValue() != null;
+        }
+
+        public boolean setVariableValue(String varName, String value){
+           if(!_variables.containsKey(varName)){
+                return false;
+            } else {
+                _variables.get(varName).setValue(value);
+                return true;
+            }
+        }
+
+        public boolean setVariableValue(int varNum, String val){
+            if(varNum > varsSequence.size()){
+                return false;
+            }
+
+            _variables.get(varsSequence.get(varNum)).setValue(val);
+            return true;
+        }
+
+        public class Variable {
+
+            private String name, value, defaultValue;
+
+            public Variable(String name, String value, String defaultValue) {
+                this.name = name;
+                this.value = value;
+                this.defaultValue = defaultValue;
+            }
+
+            public Variable(String name) {
+                this.name = name;
+                value = null;
+                defaultValue = null;
+            }
+
+            public String getDefaultValue() {
+                return defaultValue;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public String getValue() {
+                return value;
+            }
+
+            public void setValue(String value) {
+                this.value = value;
+            }
+
+            @Override
+            public String toString() {
+                return name + " " + value + " " + defaultValue;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return _variables.toString();
+        }
+
+
+    }
+    
 }

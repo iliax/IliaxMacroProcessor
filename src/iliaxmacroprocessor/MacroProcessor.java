@@ -1,7 +1,9 @@
 
 package iliaxmacroprocessor;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +33,7 @@ public class MacroProcessor {
     public MacroProcessor(GuiConfig guiConfig, List<String> strings) {
         _strings = strings;
         _guiConfig = guiConfig;
-
-        currentContext.clearVarsStore();
+        
     }
 
     /** return words between " " */
@@ -68,13 +69,13 @@ public class MacroProcessor {
         LOG.info("1st scan ended");
     }
 
-    private MacrosContext currentContext = MacrosContext.ROOT_MACROS_CONTEXT;
+    private Macros currentMacros = Macros.ROOT_MACROS;
 
     private int processMacroGeneration(int stringNum, int macroWordNum){
 
         String contextPrefix = "";
-        if( ! currentContext.equals(MacrosContext.ROOT_MACROS_CONTEXT)){
-            contextPrefix = currentContext.getMacros().getName()+".";
+        if( ! currentMacros.equals(Macros.ROOT_MACROS)){
+            contextPrefix = currentMacros.getName()+".";
         }
 
         Macros newMacros = parseMacrosHeader(_strings.get(stringNum), macroWordNum);
@@ -87,7 +88,7 @@ public class MacroProcessor {
         newMacros.setName(contextPrefix + newMacros.getName());
         LOG.info("start of "+newMacros.getName()+" macros definition");
 
-        currentContext = new MacrosContext(newMacros);      
+        currentMacros = newMacros;
         parseVariablesArea(_strings.get(stringNum));
 
         int i = stringNum + 1;
@@ -111,9 +112,9 @@ public class MacroProcessor {
         _macroses.add(newMacros);
         LOG.info("new macros added:\n" + newMacros.toString());
 
-        currentContext = currentContext.getMacros().getContext();
+        currentMacros = currentMacros.getParentMacros();
 
-        currentContext.getMacros().getNestedMacroses().add(newMacros);
+        currentMacros.getNestedMacroses().add(newMacros);
 
         return i;
     }
@@ -133,8 +134,9 @@ public class MacroProcessor {
             }
 
             Macros m = checkMacroCall(s);
+            
             if(m != null){
-                processMacrosInjection(text, m);
+                processMacrosInjection(text, m , s);
                 i++;
                 continue;
             }
@@ -181,22 +183,41 @@ public class MacroProcessor {
         return null;
     }
 
-    void processMacrosInjection(StringBuilder text, Macros macros){
+    void processMacrosInjection(StringBuilder text, Macros macros, String begining){
         
         LOG.info("process macro injection: " + macros.getName());
 
-        currentContext = new MacrosContext(macros);
+        currentMacros = macros;
+
+        if(!setMacrosVars(begining, macros)){
+            //TODO err
+        }
 
         for(String s : macros.getStrings()){
+
+            List<String> lexems = getLexems(s);
+            List<String> toAppend = new ArrayList<String>();
+            
+            for(String lex : lexems){
+                String varVal = currentMacros.getVariables().getVariableVAlFromGlobalContext(lex);
+                if(varVal != null){
+                    toAppend.add(varVal);
+                } else {
+                    toAppend.add(lex);
+                }
+            }
+
+            s = Joiner.on(" ").join(toAppend);      ///TODO test it
+
             Macros m = checkMacroCall(s);
             if(m == null){
                 text.append(s + LS);
             } else {
-                processMacrosInjection(text, m);
+                processMacrosInjection(text, m, s);
             }
         }
 
-        currentContext = currentContext.getMacros().getContext();
+        currentMacros = currentMacros.getParentMacros();
     }
 
     Macros getMacrosByName(String name){
@@ -205,10 +226,10 @@ public class MacroProcessor {
             return null;
         }
 
-        if( ! currentContext.equals(MacrosContext.ROOT_MACROS_CONTEXT)){
+        if( ! currentMacros.equals(Macros.ROOT_MACROS)){
             String _name = "." + name;
 
-            for(Macros m : currentContext.getMacros().getNestedMacroses()){   // поиск среди вложенных
+            for(Macros m : currentMacros.getNestedMacroses()){   // поиск среди вложенных
                 if(m.getName().endsWith(_name)){
                     return m;
                 }
@@ -229,7 +250,7 @@ public class MacroProcessor {
          List<String> lexems = getLexems(header);
 
          if( isValidMacrosName(lexems.get(macroWordNum+1))){
-            Macros newMacros = new Macros(lexems.get(macroWordNum+1), currentContext);
+            Macros newMacros = new Macros(lexems.get(macroWordNum+1), currentMacros);
             return newMacros;
          }
 
@@ -270,6 +291,49 @@ public class MacroProcessor {
         LOG.debug(mess);
     }
 
+    public boolean setMacrosVars(String str, Macros m){
+        if((!str.contains("[") || (!str.contains("]")))){
+            return false;  // TODO throw exc here
+        }
+
+        String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
+
+        List<String> lexems = getLexems(argsArea);
+
+        int varCount = 0;
+        //List<String> varSeq = m.getVariables().getVarsSequence();
+        Macros.VariablesStore vs  = m.getVariables();
+
+        boolean positionVarsEnded = false;
+        for(String arg : lexems){
+            if(isValidMacrosName(arg)){
+                if(!arg.contains("=")){  //позиц
+                    if(!positionVarsEnded){
+                        if(varCount < m.getVariables().varSeqCount()){
+                            vs.setVariableValue(varCount, arg);
+                            varCount++;
+                        } else {
+                            return false; //TODO exc
+                        }
+                    }
+                } else {        //ключевой
+                    positionVarsEnded =true;
+                    String varName = arg.substring(0, arg.indexOf("="));
+                    String varVal = arg.substring(arg.indexOf("=")+1);
+
+                    if(vs.isVariableExists(varName) && vs.isVariableKeyVar(varName)){
+                        vs.setVariableValue(varName, varVal);
+                    } else {
+                        return false; //TODO exc
+                    }
+                }
+            }
+        }
+
+        return true;
+        
+    }
+
     public boolean parseVariablesArea(String str) {
         if((!str.contains("[") || (!str.contains("]")))){
             return false;  // TODO throw exc here
@@ -283,13 +347,12 @@ public class MacroProcessor {
         for(String arg : lexems){
             if(isValidVariableName(arg)){
                 if(!arg.contains("=")){
-                    currentContext.getVariablesStore().addVariable(arg);
+                    currentMacros.getVariables().addVariable(arg);
                 } else {
-
-                    String s1 = arg.substring(0, arg.indexOf("="));
-                    String s2 = arg.substring(arg.indexOf("=")+1);
-                    currentContext.getVariablesStore()
-                            .addKeyVariable(s1,s2);
+                    String varName = arg.substring(0, arg.indexOf("="));
+                    String varVal = arg.substring(arg.indexOf("=")+1);
+                    currentMacros.getVariables()
+                            .addKeyVariable(varName,varVal);
                 }
             } else {
                 //TODO exc here
@@ -300,7 +363,8 @@ public class MacroProcessor {
         return true;
     }
 
-    public static boolean isValidVariableName(String varName){
+
+    public boolean isValidVariableName(String varName){
         //TODO write it
         return true;
     }
