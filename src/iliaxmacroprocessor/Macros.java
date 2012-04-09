@@ -160,7 +160,7 @@ public class Macros {
         }
 
         public String getVariableVAlFromGlobalContext(String varName){
-            if(_variables.get(varName) != null){
+            if(_variables.get(varName) != null && /*check it->*/ _variables.get(varName).getValue()!=null){ //TODO test it
                 return _variables.get(varName).getValue();
             } else {
                 if(!Macros.this.getParentMacros().equals(ROOT_MACROS)){

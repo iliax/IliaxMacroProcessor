@@ -1,13 +1,24 @@
-MACRO m1 [x1]
+MACRO m1 [x1 x2]
 
- MACRO m2 []
+ MACRO m2 [x1 x2]
    x1
+   x2
  MEND
 
  test = x1 
 
-m2 []
+ m2 [3]
 
 MEND
 
-m1 [123]
+m1 [1 2]
+//
+MACRO m2 [x1 x2 x3=66 x4=23]
+x1
+x2
+x3
+x4
+MEND
+
+
+m2 [123 x4=]

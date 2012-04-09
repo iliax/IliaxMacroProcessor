@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import  static iliaxmacroprocessor.ParsingUtils.*;
 /**
  *
  * @author iliax
@@ -25,15 +26,15 @@ public class MacroProcessorTest {
     public void getLexems(){
         List<String> tst = ImmutableList.of("a", "b", "c");
 
-        List<String> tst2 = MacroProcessor.getLexems("a b   c");
+        List<String> tst2 = ParsingUtils.getLexems("a b   c");
 
         assertTrue(tst.equals(tst2));
     }
 
     @Test
     public void isLabel(){
-        assertTrue(MacroProcessor.isLabel("L1:"));
-        assertFalse(MacroProcessor.isLabel("L1"));
+        assertTrue(ParsingUtils.isLabel("L1:"));
+        assertFalse(ParsingUtils.isLabel("L1"));
     }
 
     @Test

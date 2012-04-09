@@ -204,7 +204,7 @@ public class MainForm extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(macroProcessor == null){
-            //TODO do smth here!
+            JOptionPane.showMessageDialog(this, "cant't start 2nd scan!");
             return ;
         }
 

@@ -2,13 +2,10 @@
 package iliaxmacroprocessor;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
+import  static iliaxmacroprocessor.ParsingUtils.*;
 
 /**
  *  main algorithm class
@@ -18,35 +15,18 @@ public class MacroProcessor {
 
     private static final Logger LOG = Logger.getLogger(MacroProcessor.class.getName());
 
-    private static final String LS = System.getProperty("line.separator");
-
     private List<String> _strings;
     
     private GuiConfig _guiConfig;
 
     private List<Macros> _macroses = new ArrayList<Macros>();
 
-    final String MACRO_DEF = "MACRO";
-
-    final String MACRO_END = "MEND";
+    private MacrosArgumentsParser _macrosArgumentsParser = new MacrosArgumentsParser();
 
     public MacroProcessor(GuiConfig guiConfig, List<String> strings) {
         _strings = strings;
         _guiConfig = guiConfig;
         
-    }
-
-    /** return words between " " */
-    static List<String> getLexems(String str) {
-        return Lists.newArrayList(Splitter.on(" ").trimResults().omitEmptyStrings().split(str));
-    }
-
-    static boolean isLabel(String lbl){
-        if( Pattern.compile("^[A-Z_a-z]+([A-Za-z0-9_]){0,15}:$").matcher(lbl).matches() ){
-            return true;
-        }
-
-        return false;
     }
 
     public void start1stScan(){
@@ -89,7 +69,8 @@ public class MacroProcessor {
         LOG.info("start of "+newMacros.getName()+" macros definition");
 
         currentMacros = newMacros;
-        parseVariablesArea(_strings.get(stringNum));
+        
+        _macrosArgumentsParser.parseVariablesArea(_strings.get(stringNum), currentMacros);
 
         int i = stringNum + 1;
         while( ! checkMacroGenEnding(_strings.get(i))){
@@ -141,7 +122,8 @@ public class MacroProcessor {
                 continue;
             }
 
-            text.append(s + LS);
+            text.append(s);
+            text.append(LS);
 
             i++;
         }
@@ -152,20 +134,17 @@ public class MacroProcessor {
     int passMacroDefinition(int begin){
         int i = begin + 1;
 
-        //TODO cycle!
         while(!checkMacroGenEnding(_strings.get(i))){
             if(checkMacroGenHeader(_strings.get(i)) != -1){
                 i = passMacroDefinition(i);
                 continue;
             }
-
             i++;
         }
 
         return i + 1;
     }
 
-    //TODO параметры
     Macros checkMacroCall(String str){
 
         List<String> lexems = getLexems(str);
@@ -189,8 +168,11 @@ public class MacroProcessor {
 
         currentMacros = macros;
 
-        if(!setMacrosVars(begining, macros)){
-            //TODO err
+        try{
+            _macrosArgumentsParser.setMacrosVars(begining, macros);
+        } catch(RuntimeException e){
+            LOG.error("err", e);
+            throw e;
         }
 
         for(String s : macros.getStrings()){
@@ -257,116 +239,11 @@ public class MacroProcessor {
          return null;
     }
 
-    private boolean isValidMacrosName(String name){
-        // TODO stub here
-        return true;
-    }
 
-    /** returns -1 if this is not macro generation header */
-    private int checkMacroGenHeader(String head){
-        List<String> lexems = getLexems(head);
-
-        if(lexems.size() >= 3 && lexems.get(0).equals(MACRO_DEF) && lexems.get(2).startsWith("[")){
-            return 0;
-        } else if(lexems.size() >= 4 && lexems.get(1).equals(MACRO_DEF) && lexems.get(3).startsWith("[")){
-            return 1;
-        } else {
-           return -1;
-        }
-   
-    }
-
-    private boolean checkMacroGenEnding(String end){
-        List<String> lexems = getLexems(end);
-
-        if(lexems.get(0).equals(MACRO_END)
-                || (lexems.size() == 2 && lexems.get(1).equals(MACRO_END))){
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     public void logError(String mess){
         LOG.debug(mess);
     }
 
-    public boolean setMacrosVars(String str, Macros m){
-        if((!str.contains("[") || (!str.contains("]")))){
-            return false;  // TODO throw exc here
-        }
-
-        String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
-
-        List<String> lexems = getLexems(argsArea);
-
-        int varCount = 0;
-        //List<String> varSeq = m.getVariables().getVarsSequence();
-        Macros.VariablesStore vs  = m.getVariables();
-
-        boolean positionVarsEnded = false;
-        for(String arg : lexems){
-            if(isValidMacrosName(arg)){
-                if(!arg.contains("=")){  //позиц
-                    if(!positionVarsEnded){
-                        if(varCount < m.getVariables().varSeqCount()){
-                            vs.setVariableValue(varCount, arg);
-                            varCount++;
-                        } else {
-                            return false; //TODO exc
-                        }
-                    }
-                } else {        //ключевой
-                    positionVarsEnded =true;
-                    String varName = arg.substring(0, arg.indexOf("="));
-                    String varVal = arg.substring(arg.indexOf("=")+1);
-
-                    if(vs.isVariableExists(varName) && vs.isVariableKeyVar(varName)){
-                        vs.setVariableValue(varName, varVal);
-                    } else {
-                        return false; //TODO exc
-                    }
-                }
-            }
-        }
-
-        return true;
-        
-    }
-
-    public boolean parseVariablesArea(String str) {
-        if((!str.contains("[") || (!str.contains("]")))){
-            return false;  // TODO throw exc here
-        }
-
-        String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
-        LOG.info("workng with args area: '"+argsArea+"'");
-
-        List<String> lexems = getLexems(argsArea);
-
-        for(String arg : lexems){
-            if(isValidVariableName(arg)){
-                if(!arg.contains("=")){
-                    currentMacros.getVariables().addVariable(arg);
-                } else {
-                    String varName = arg.substring(0, arg.indexOf("="));
-                    String varVal = arg.substring(arg.indexOf("=")+1);
-                    currentMacros.getVariables()
-                            .addKeyVariable(varName,varVal);
-                }
-            } else {
-                //TODO exc here
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
-
-    public boolean isValidVariableName(String varName){
-        //TODO write it
-        return true;
-    }
 
 }
