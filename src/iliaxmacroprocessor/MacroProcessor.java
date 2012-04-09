@@ -5,7 +5,7 @@ import com.google.common.base.Joiner;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import  static iliaxmacroprocessor.ParsingUtils.*;
+import static iliaxmacroprocessor.ParsingUtils.*;
 
 /**
  *  main algorithm class
@@ -46,7 +46,7 @@ public class MacroProcessor {
             }
         }
         
-        LOG.info("1st scan ended");
+        LOG.info("1st scan finished");
     }
 
     private Macros currentMacros = Macros.ROOT_MACROS;
@@ -81,7 +81,13 @@ public class MacroProcessor {
             if(checkHeader == -1){
                 LOG.info("adding new string: "+macroString);
 
+                String lbl = getLabelFromString(macroString);
+                if(lbl != null){
+                    currentMacros.addLabel(lbl, i - stringNum);
+                }
+
                 newMacros.getStrings().add(macroString);
+
                 i++;
             } else {
                 LOG.info("starting nested macros definition");
@@ -90,7 +96,7 @@ public class MacroProcessor {
             }
         }
 
-        _macroses.add(newMacros);
+        _macroses.add(newMacros);   //TODO unique check
         LOG.info("new macros added:\n" + newMacros.toString());
 
         currentMacros = currentMacros.getParentMacros();
@@ -101,6 +107,8 @@ public class MacroProcessor {
     }
 
     public void start2ndScan(){
+        LOG.info("2nd scan started");
+
         StringBuilder text = new StringBuilder();
         
         int i=0;
@@ -129,9 +137,11 @@ public class MacroProcessor {
         }
 
         _guiConfig.outTextField.setText(text.toString());
+
+        LOG.info("2nd scan finished");
     }
 
-    int passMacroDefinition(int begin){
+    private int passMacroDefinition(int begin){
         int i = begin + 1;
 
         while(!checkMacroGenEnding(_strings.get(i))){
@@ -145,7 +155,7 @@ public class MacroProcessor {
         return i + 1;
     }
 
-    Macros checkMacroCall(String str){
+    private Macros checkMacroCall(String str){
 
         List<String> lexems = getLexems(str);
 
@@ -162,7 +172,7 @@ public class MacroProcessor {
         return null;
     }
 
-    void processMacrosInjection(StringBuilder text, Macros macros, String begining){
+    private void processMacrosInjection(StringBuilder text, Macros macros, String begining){
         
         LOG.info("process macro injection: " + macros.getName());
 
@@ -193,7 +203,8 @@ public class MacroProcessor {
 
             Macros m = checkMacroCall(s);
             if(m == null){
-                text.append(s + LS);
+                text.append(s);
+                text.append(LS);
             } else {
                 processMacrosInjection(text, m, s);
             }
@@ -202,7 +213,7 @@ public class MacroProcessor {
         currentMacros = currentMacros.getParentMacros();
     }
 
-    Macros getMacrosByName(String name){
+    private Macros getMacrosByName(String name){
 
         if(!isValidMacrosName(name)){
             return null;
@@ -238,8 +249,6 @@ public class MacroProcessor {
 
          return null;
     }
-
-
 
     public void logError(String mess){
         LOG.debug(mess);

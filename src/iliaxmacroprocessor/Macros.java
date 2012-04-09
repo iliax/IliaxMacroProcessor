@@ -30,7 +30,9 @@ public class Macros {
     
     /** unique! */
     private String _name;
+
     private List<String> _strings = new ArrayList<String>();
+    
     private List<Macros> _nestedMacroses = new ArrayList<Macros>();
 
     private Macros _parentMacros;
@@ -77,7 +79,18 @@ public class Macros {
         return _parentMacros;
     }
 
-    
+    public boolean addLabel(String lbl, Integer strNum){
+        if(_labels.containsKey(lbl)){
+            return false;
+        }
+        
+        _labels.put(lbl, strNum);
+        return true;
+    }
+
+    public boolean isLabelExist(String lbl){
+        return _labels.containsKey(lbl);
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -114,7 +127,8 @@ public class Macros {
         }
 
         str += "\n" + getVariables().toString();
-       
+
+        str += "\n" + _labels.toString();
 
         return str;
     }
@@ -179,7 +193,7 @@ public class Macros {
             if(_variables.containsKey(varName)){
                 return false;
             } else {
-                _variables.put(varName, new Variable(varName, defVal, defVal));
+                _variables.put(varName, new Variable(varName, defVal));
                 return true;
             }
         }
@@ -193,7 +207,7 @@ public class Macros {
         }
 
         public boolean isVariableKeyVar(String var){
-            return _variables.get(var).getDefaultValue() != null;
+            return _variables.get(var).isKeyVariable();
         }
 
         public boolean setVariableValue(String varName, String value){
@@ -216,22 +230,22 @@ public class Macros {
 
         public class Variable {
 
-            private String name, value, defaultValue;
+            private String name, value;
+            private boolean keyVariable = false;
 
-            public Variable(String name, String value, String defaultValue) {
+            public Variable(String name, String value) {
                 this.name = name;
                 this.value = value;
-                this.defaultValue = defaultValue;
+                this.keyVariable = true;
             }
 
             public Variable(String name) {
                 this.name = name;
                 value = null;
-                defaultValue = null;
             }
 
-            public String getDefaultValue() {
-                return defaultValue;
+            public boolean isKeyVariable() {
+                return keyVariable;
             }
 
             public String getName() {
@@ -248,7 +262,7 @@ public class Macros {
 
             @Override
             public String toString() {
-                return name + " " + value + " " + defaultValue;
+                return name + " " + value + " " + keyVariable;
             }
         }
 
