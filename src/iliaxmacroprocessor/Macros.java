@@ -143,7 +143,7 @@ public class Macros {
         }
     }
 
-public class VariablesStore {
+   public class VariablesStore {
 
         private Map<String, Variable> _variables = new LinkedHashMap<String, Variable>();
 
@@ -191,7 +191,7 @@ public class VariablesStore {
             if(_variables.containsKey(varName)){
                 return false;
             } else {
-                _variables.put(varName, new Variable(varName, defVal, defVal));
+                _variables.put(varName, new Variable(varName, defVal));
                 return true;
             }
         }
@@ -205,7 +205,7 @@ public class VariablesStore {
         }
 
         public boolean isVariableKeyVar(String var){
-            return _variables.get(var).getDefaultValue() != null;
+            return _variables.get(var).isKeyVariable();
         }
 
         public boolean setVariableValue(String varName, String value){
@@ -228,22 +228,22 @@ public class VariablesStore {
 
         public class Variable {
 
-            private String name, value, defaultValue;
+            private String name, value;
+            private boolean keyVariable = false;
 
-            public Variable(String name, String value, String defaultValue) {
+            public Variable(String name, String value) {
                 this.name = name;
                 this.value = value;
-                this.defaultValue = defaultValue;
+                this.keyVariable = true;
             }
 
             public Variable(String name) {
                 this.name = name;
                 value = null;
-                defaultValue = null;
             }
 
-            public String getDefaultValue() {
-                return defaultValue;
+            public boolean isKeyVariable() {
+                return keyVariable;
             }
 
             public String getName() {
@@ -260,7 +260,7 @@ public class VariablesStore {
 
             @Override
             public String toString() {
-                return name + " " + value + " " + defaultValue;
+                return name + " " + value + " " + keyVariable;
             }
         }
 
