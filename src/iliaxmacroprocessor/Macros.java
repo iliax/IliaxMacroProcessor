@@ -143,9 +143,7 @@ public class Macros {
         }
     }
 
-
-
-    public class VariablesStore {
+public class VariablesStore {
 
         private Map<String, Variable> _variables = new LinkedHashMap<String, Variable>();
 
@@ -161,7 +159,7 @@ public class Macros {
         public List<String> getVarsSequence() {
             return varsSequence;
         }
-        
+
 
         public boolean addVariable(String varName){
             if(_variables.containsKey(varName)){
@@ -193,7 +191,7 @@ public class Macros {
             if(_variables.containsKey(varName)){
                 return false;
             } else {
-                _variables.put(varName, new Variable(varName, defVal));
+                _variables.put(varName, new Variable(varName, defVal, defVal));
                 return true;
             }
         }
@@ -207,7 +205,7 @@ public class Macros {
         }
 
         public boolean isVariableKeyVar(String var){
-            return _variables.get(var).isKeyVariable();
+            return _variables.get(var).getDefaultValue() != null;
         }
 
         public boolean setVariableValue(String varName, String value){
@@ -230,22 +228,22 @@ public class Macros {
 
         public class Variable {
 
-            private String name, value;
-            private boolean keyVariable = false;
+            private String name, value, defaultValue;
 
-            public Variable(String name, String value) {
+            public Variable(String name, String value, String defaultValue) {
                 this.name = name;
                 this.value = value;
-                this.keyVariable = true;
+                this.defaultValue = defaultValue;
             }
 
             public Variable(String name) {
                 this.name = name;
                 value = null;
+                defaultValue = null;
             }
 
-            public boolean isKeyVariable() {
-                return keyVariable;
+            public String getDefaultValue() {
+                return defaultValue;
             }
 
             public String getName() {
@@ -262,7 +260,7 @@ public class Macros {
 
             @Override
             public String toString() {
-                return name + " " + value + " " + keyVariable;
+                return name + " " + value + " " + defaultValue;
             }
         }
 

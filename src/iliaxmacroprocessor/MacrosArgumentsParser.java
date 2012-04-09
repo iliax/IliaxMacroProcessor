@@ -66,34 +66,34 @@ public class MacrosArgumentsParser {
         boolean positionVarsEnded = false;
         for(String arg : lexems){
 
-            if(isValidMacrosName(arg)){
+            if(!arg.contains("=")){
+                //позиц
+                if(!positionVarsEnded){
 
-                if(!arg.contains("=")){
-                    //позиц
-                    if(!positionVarsEnded){
-                        if(varCount < m.getVariables().varSeqCount()){
-                            vs.setVariableValue(varCount, arg);
-                            varCount++;
-                        } else {
-                            throw new RuntimeException("too many args!");
-                        }
+                    if(varCount < m.getVariables().varSeqCount()){
+                        vs.setVariableValue(varCount, arg);
+                        varCount++;
                     } else {
-                       throw new RuntimeException("position arg definition expected!");
+                        throw new RuntimeException("too many args!");
                     }
-                    
                 } else {
-                    //ключевой
-                    positionVarsEnded =true;
-                    String varName = arg.substring(0, arg.indexOf("="));
-                    String varVal = arg.substring(arg.indexOf("=")+1); 
+                   throw new RuntimeException("position arg definition expected!");
+                }
 
-                    if(vs.isVariableExists(varName) && vs.isVariableKeyVar(varName)){
-                        vs.setVariableValue(varName, varVal);
-                    } else {
-                        throw new RuntimeException("unknown contruction. Str: '"+str+"'");
-                    }
+            } else {
+                //ключевой
+                positionVarsEnded =true;
+                String varName = arg.substring(0, arg.indexOf("="));
+
+                String varVal = arg.substring(arg.indexOf("=")+1);
+
+                if(vs.isVariableExists(varName) && vs.isVariableKeyVar(varName)){
+                    vs.setVariableValue(varName, varVal);
+                } else {
+                    throw new RuntimeException("unknown contruction. Str: '"+str+"'");
                 }
             }
+            
         }
 
 //        // если арг не передан то можно попробовать поискать его у родителя
