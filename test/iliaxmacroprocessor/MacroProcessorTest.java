@@ -35,4 +35,11 @@ public class MacroProcessorTest {
         assertTrue(MacroProcessor.isLabel("L1:"));
         assertFalse(MacroProcessor.isLabel("L1"));
     }
+
+    @Test
+    public void parseVariablesArea(){
+        String arg = "q1=2";
+       assertEquals(arg.substring(0, arg.indexOf("=")), "q1");
+       assertEquals(arg.substring(arg.indexOf("=")+1), "2");
+    }
 }

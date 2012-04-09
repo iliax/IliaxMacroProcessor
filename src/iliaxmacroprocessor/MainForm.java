@@ -181,7 +181,6 @@ public class MainForm extends javax.swing.JFrame {
                 LOG.error("io error", re);
             }
         } else {
-            //TODO
             JOptionPane.showMessageDialog(this, "no file to save");
         }
     }//GEN-LAST:event__saveMenuItemActionPerformed

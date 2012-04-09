@@ -97,6 +97,8 @@ public class Macros {
             }
         }
 
+        str += "\n vars: " + getContext().getVariablesStore();
+
         return str;
     }
 

@@ -31,6 +31,8 @@ public class MacroProcessor {
     public MacroProcessor(GuiConfig guiConfig, List<String> strings) {
         _strings = strings;
         _guiConfig = guiConfig;
+
+        currentContext.clearVarsStore();
     }
 
     /** return words between " " */
@@ -85,11 +87,15 @@ public class MacroProcessor {
         newMacros.setName(contextPrefix + newMacros.getName());
         LOG.info("start of "+newMacros.getName()+" macros definition");
 
-        currentContext = new MacrosContext(newMacros);
+        currentContext = new MacrosContext(newMacros);      
+        parseVariablesArea(_strings.get(stringNum));
+
         int i = stringNum + 1;
         while( ! checkMacroGenEnding(_strings.get(i))){
             String macroString = _strings.get(i);
+            
             int checkHeader = checkMacroGenHeader(macroString);
+
             if(checkHeader == -1){
                 LOG.info("adding new string: "+macroString);
 
@@ -113,10 +119,9 @@ public class MacroProcessor {
     }
 
     public void start2ndScan(){
-        int i=0;
-
         StringBuilder text = new StringBuilder();
-
+        
+        int i=0;
         while(i < _strings.size()){
             String s = _strings.get(i);
 
@@ -145,6 +150,7 @@ public class MacroProcessor {
     int passMacroDefinition(int begin){
         int i = begin + 1;
 
+        //TODO cycle!
         while(!checkMacroGenEnding(_strings.get(i))){
             if(checkMacroGenHeader(_strings.get(i)) != -1){
                 i = passMacroDefinition(i);
@@ -195,6 +201,10 @@ public class MacroProcessor {
 
     Macros getMacrosByName(String name){
 
+        if(!isValidMacrosName(name)){
+            return null;
+        }
+
         if( ! currentContext.equals(MacrosContext.ROOT_MACROS_CONTEXT)){
             String _name = "." + name;
 
@@ -204,9 +214,7 @@ public class MacroProcessor {
                 }
             }
             
-        } else if(name.contains(".")){  //вызов макроса с точкой в имени
-            return null;
-        }
+        } 
 
         for(Macros m : _macroses){
             if(name.equals(m.getName())){
@@ -237,9 +245,9 @@ public class MacroProcessor {
     private int checkMacroGenHeader(String head){
         List<String> lexems = getLexems(head);
 
-        if(lexems.size() >= 3 && lexems.get(0).equals(MACRO_DEF)){
+        if(lexems.size() >= 3 && lexems.get(0).equals(MACRO_DEF) && lexems.get(2).startsWith("[")){
             return 0;
-        } else if(lexems.size() >= 4 && lexems.get(1).equals(MACRO_DEF)){
+        } else if(lexems.size() >= 4 && lexems.get(1).equals(MACRO_DEF) && lexems.get(3).startsWith("[")){
             return 1;
         } else {
            return -1;
@@ -261,4 +269,40 @@ public class MacroProcessor {
     public void logError(String mess){
         LOG.debug(mess);
     }
+
+    public boolean parseVariablesArea(String str) {
+        if((!str.contains("[") || (!str.contains("]")))){
+            return false;  // TODO throw exc here
+        }
+
+        String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
+        LOG.info("workng with args area: '"+argsArea+"'");
+
+        List<String> lexems = getLexems(argsArea);
+
+        for(String arg : lexems){
+            if(isValidVariableName(arg)){
+                if(!arg.contains("=")){
+                    currentContext.getVariablesStore().addVariable(arg);
+                } else {
+
+                    String s1 = arg.substring(0, arg.indexOf("="));
+                    String s2 = arg.substring(arg.indexOf("=")+1);
+                    currentContext.getVariablesStore()
+                            .addKeyVariable(s1,s2);
+                }
+            } else {
+                //TODO exc here
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    public static boolean isValidVariableName(String varName){
+        //TODO write it
+        return true;
+    }
+
 }
