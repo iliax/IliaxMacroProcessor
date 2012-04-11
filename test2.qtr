@@ -3,19 +3,22 @@ MACRO m1 [x]
 MACROS1 x
 
 	MACRO m2 []
-	 macros2
+	  macros2
 	MEND
 
 	MACRO m3 []
-	 m2 []
+	  m2 []
+ 	  M []
 	MEND
 
-m3 []
-
+ m3 []
 MEND
 
 m1 [111]
 
 MACRO M []
-marrrr
+  marrrr
+  m2 []
 MEND
+ ===
+M []

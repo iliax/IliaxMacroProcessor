@@ -79,6 +79,10 @@ public class Macros {
         return _parentMacros;
     }
 
+    public boolean isBrotherTo(Macros child){
+        return true; //TODO wite it
+    }
+
     public boolean addLabel(String lbl, Integer strNum){
         if(_labels.containsKey(lbl)){
             return false;

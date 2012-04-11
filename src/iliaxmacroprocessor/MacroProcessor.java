@@ -1,4 +1,3 @@
-
 package iliaxmacroprocessor;
 
 import com.google.common.base.Joiner;
@@ -13,6 +12,9 @@ import static iliaxmacroprocessor.ParsingUtils.*;
  * @author iliax
  */
 public class MacroProcessor {
+
+    // позволять рекурсивный вызов макроса
+    public boolean enableRecursionMacrossCall = false;
 
     private static final Logger LOG = Logger.getLogger(MacroProcessor.class.getName());
 
@@ -111,6 +113,7 @@ public class MacroProcessor {
         LOG.info("2nd scan started");
         StringBuilder text = new StringBuilder();
         
+
         int i=0;
         while(i < _strings.size()){
             String s = _strings.get(i);
@@ -210,9 +213,10 @@ public class MacroProcessor {
                 text.append(s);
                 text.append(LS);
             } else {
-                if(currentMacrosesStack.contains(m)){   //если это вызов родительского макроса или себя
-                    text.append(s);
-                    text.append(" // <-- warning!");
+                
+                if((!enableRecursionMacrossCall)
+                        && currentMacrosesStack.contains(m)){
+                    text.append("//"+ s +" <-- warning!");
                     text.append(LS);
                     LOG.warn("parent macros call");
                     continue;
@@ -232,24 +236,36 @@ public class MacroProcessor {
             return null;
         }
 
+
         String name_ = currentMacrosesStack.getLast().getName() + "." + name; 
 
         Macros parentForSearch = currentMacrosesStack.getLast();     
 
         for(Macros m : parentForSearch.getNestedMacroses()){   // поиск сначала среди вложенных 
-            if(m.getName().equals(name_)){
+            if(m.getName().equals(name_)){ 
                 return m;
             }
         }
 
-        name_ = parentForSearch.getParentMacros().getName() + "." +name;
+        /*name_ = parentForSearch.getParentMacros().getName() + "." +name;
 
         for(Macros m : parentForSearch.getParentMacros().getNestedMacroses()){   // поиск среди того же уровня
             if(m.getName().equals(name_)){
                 return m;
             }
+        }*/
+
+        //recursive check here
+        if( ! currentMacrosesStack.getLast().equals(Macros.ROOT_MACROS)){
+            if(!currentMacrosesStack.getLast().isBrotherTo(parentForSearch)){
+                System.err.println("olololo\n\n");
+                return null;
+            }
+            Macros temp = currentMacrosesStack.pollLast();
+            Macros result = getMacrosByName(name);
+            currentMacrosesStack.add(temp);
+            return result;
         }
-        
 
         return null;
     }
