@@ -14,11 +14,11 @@ import static com.google.common.base.Preconditions.*;
  */
 public class Macros {
 
-    public static final Macros ROOT_MACROS = new Macros("root", null) {
+    public static final Macros ROOT_MACROS = new Macros("", null) {
 
         @Override
         public List<Macros> getNestedMacroses() {
-            return FakeList.FAKE_LIST;
+            return super.getNestedMacroses();
         }
 
         @Override

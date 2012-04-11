@@ -33,6 +33,10 @@ public class MacroProcessor {
     public void start1stScan(){
         LOG.info("1st scan begun");
 
+        currentMacrosesStack.add(Macros.ROOT_MACROS);
+
+        Macros.ROOT_MACROS.getNestedMacroses().clear(); //TODO 
+
         int i = 0;
         int stringsSize = _strings.size();
 
@@ -50,15 +54,13 @@ public class MacroProcessor {
         LOG.info("1st scan finished");
     }
 
-    private Macros currentMacros = Macros.ROOT_MACROS;
 
     private int processMacroGeneration(int stringNum, int macroWordNum){
 
         String contextPrefix = "";
-        if( ! currentMacros.equals(Macros.ROOT_MACROS)){
-            contextPrefix = currentMacros.getName()+".";
-        }
-
+        
+        contextPrefix = currentMacrosesStack.getLast().getName()+".";
+        
         Macros newMacros = parseMacrosHeader(_strings.get(stringNum), macroWordNum);
 
         if(newMacros == null){
@@ -69,9 +71,9 @@ public class MacroProcessor {
         newMacros.setName(contextPrefix + newMacros.getName());
         LOG.info("start of "+newMacros.getName()+" macros definition");
 
-        currentMacros = newMacros;
+        currentMacrosesStack.add(newMacros);
         
-        _macrosArgumentsParser.parseVariablesArea(_strings.get(stringNum), currentMacros);
+        _macrosArgumentsParser.parseVariablesArea(_strings.get(stringNum), currentMacrosesStack.getLast());
 
         int i = stringNum + 1;
         while( ! checkMacroGenEnding(_strings.get(i))){
@@ -84,7 +86,7 @@ public class MacroProcessor {
 
                 String lbl = getLabelFromString(macroString);
                 if(lbl != null){
-                    currentMacros.addLabel(lbl, i - stringNum);
+                    currentMacrosesStack.getLast().addLabel(lbl, i - stringNum);
                 }
 
                 newMacros.getStrings().add(macroString);
@@ -100,16 +102,13 @@ public class MacroProcessor {
         _macroses.add(newMacros);   //TODO unique check
         LOG.info("new macros added:\n" + newMacros.toString());
 
-        currentMacros = currentMacros.getParentMacros();
-
-        currentMacros.getNestedMacroses().add(newMacros);
+        currentMacrosesStack.getLast().getParentMacros().getNestedMacroses().add(currentMacrosesStack.pollLast());
 
         return i;
     }
 
     public void start2ndScan(){
         LOG.info("2nd scan started");
-
         StringBuilder text = new StringBuilder();
         
         int i=0;
@@ -160,7 +159,8 @@ public class MacroProcessor {
 
         List<String> lexems = getLexems(str);
 
-        if((lexems.size() >= 2) && (getMacrosByName(lexems.get(0)) != null)){
+        if((lexems.size() >= 2)
+                && (getMacrosByName(lexems.get(0)) != null)){
             if(lexems.get(1).startsWith("["))
                 return getMacrosByName(lexems.get(0));
         }
@@ -180,7 +180,6 @@ public class MacroProcessor {
         LOG.info("process macro injection: " + macros.getName());
 
         currentMacrosesStack.add(macros);
-        currentMacros = macros;
 
         try {
             _macrosArgumentsParser.setMacrosVars(begining, macros);
@@ -195,7 +194,7 @@ public class MacroProcessor {
             List<String> toAppend = new ArrayList<String>();
             
             for(String lex : lexems){
-                String varVal = currentMacros.getVariables().getVariableVAlFromGlobalContext(lex);
+                String varVal = currentMacrosesStack.getLast().getVariables().getVariableVAlFromGlobalContext(lex);
                 if(varVal != null){
                     toAppend.add(varVal);
                 } else {
@@ -225,7 +224,6 @@ public class MacroProcessor {
         }
 
         currentMacrosesStack.pollLast();
-        currentMacros = currentMacrosesStack.pollLast(); 
     }
 
     private Macros getMacrosByName(String name){
@@ -234,22 +232,24 @@ public class MacroProcessor {
             return null;
         }
 
-        if( ! currentMacros.equals(Macros.ROOT_MACROS)){
-            String _name = "." + name;
+        String name_ = currentMacrosesStack.getLast().getName() + "." + name; 
 
-            for(Macros m : currentMacros.getNestedMacroses()){   // поиск среди вложенных
-                if(m.getName().endsWith(_name)){
-                    return m;
-                }
-            }
-            
-        } 
+        Macros parentForSearch = currentMacrosesStack.getLast();     
 
-        for(Macros m : _macroses){
-            if(name.equals(m.getName())){
+        for(Macros m : parentForSearch.getNestedMacroses()){   // поиск сначала среди вложенных 
+            if(m.getName().equals(name_)){
                 return m;
             }
         }
+
+        name_ = parentForSearch.getParentMacros().getName() + "." +name;
+
+        for(Macros m : parentForSearch.getParentMacros().getNestedMacroses()){   // поиск среди того же уровня
+            if(m.getName().equals(name_)){
+                return m;
+            }
+        }
+        
 
         return null;
     }
@@ -258,7 +258,7 @@ public class MacroProcessor {
          List<String> lexems = getLexems(header);
 
          if( isValidMacrosName(lexems.get(macroWordNum+1))){
-            Macros newMacros = new Macros(lexems.get(macroWordNum+1), currentMacros);
+            Macros newMacros = new Macros(lexems.get(macroWordNum+1), currentMacrosesStack.getLast());
             return newMacros;
          }
 

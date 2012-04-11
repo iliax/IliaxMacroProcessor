@@ -1,6 +1,6 @@
-MACRO m1 []
+MACRO m1 [x]
 
-MACROS1
+MACROS1 x
 
 	MACRO m2 []
 	 macros2
@@ -14,4 +14,8 @@ m3 []
 
 MEND
 
-m1 []
+m1 [111]
+
+MACRO M []
+marrrr
+MEND

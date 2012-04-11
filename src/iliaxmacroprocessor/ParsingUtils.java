@@ -58,6 +58,10 @@ public class ParsingUtils {
     }
 
     public static boolean isValidMacrosName(String name){
+        if(name.startsWith(".")){
+            return isValidMacrosName(name.substring(1));
+        }
+
         if( Pattern.compile("^[A-Z_a-z]+([A-Za-z0-9_]){0,15}$").matcher(name).matches() ){
             return true;
         }
