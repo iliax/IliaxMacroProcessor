@@ -63,8 +63,10 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
+        _sourseTextField.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
         jScrollPane1.setViewportView(_sourseTextField);
 
+        _outTextField.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
         jScrollPane2.setViewportView(_outTextField);
 
         jLabel1.setText("IN:");

@@ -3,6 +3,7 @@ package iliaxmacroprocessor;
 
 import com.google.common.base.Joiner;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import static iliaxmacroprocessor.ParsingUtils.*;
@@ -172,13 +173,16 @@ public class MacroProcessor {
         return null;
     }
 
+    private LinkedList<Macros> currentMacrosesStack = new LinkedList<Macros>();
+
     private void processMacrosInjection(StringBuilder text, Macros macros, String begining){
         
         LOG.info("process macro injection: " + macros.getName());
 
+        currentMacrosesStack.add(macros);
         currentMacros = macros;
 
-        try{
+        try {
             _macrosArgumentsParser.setMacrosVars(begining, macros);
         } catch(RuntimeException e){
             LOG.error("err", e);
@@ -203,14 +207,25 @@ public class MacroProcessor {
 
             Macros m = checkMacroCall(s);
             if(m == null){
+
                 text.append(s);
                 text.append(LS);
             } else {
-                processMacrosInjection(text, m, s);
+                if(currentMacrosesStack.contains(m)){   //если это вызов родительского макроса или себя
+                    text.append(s);
+                    text.append(" // <-- warning!");
+                    text.append(LS);
+                    LOG.warn("parent macros call");
+                    continue;
+                } else {
+                    processMacrosInjection(text, m, s);
+
+                }
             }
         }
 
-        currentMacros = currentMacros.getParentMacros();
+        currentMacrosesStack.pollLast();
+        currentMacros = currentMacrosesStack.pollLast(); 
     }
 
     private Macros getMacrosByName(String name){

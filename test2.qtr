@@ -1,25 +1,17 @@
-MACRO m1 [x1 x2]
+MACRO m1 []
 
- MACRO m2 [x1 x2]
-   x1
-   x2
- MEND
+MACROS1
 
- test = x1 
+	MACRO m2 []
+	 macros2
+	MEND
 
- m2 [3]
+	MACRO m3 []
+	 m2 []
+	MEND
+
+m3 []
 
 MEND
 
-
-//
-
-MACRO MM [x xx xxx=66 x4=5]
-x
-xx
-xxx
-x4
-MEND
-
-
-MM [1 2 x4=123123]
+m1 []
