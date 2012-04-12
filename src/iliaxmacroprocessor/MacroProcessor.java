@@ -239,15 +239,16 @@ public class MacroProcessor {
 
         String name_ = currentMacrosesStack.getLast().getName() + "." + name; 
 
-        Macros parentForSearch = currentMacrosesStack.getLast();     
+        Macros parentForSearch = currentMacrosesStack.getLast();
 
-        for(Macros m : parentForSearch.getNestedMacroses()){   // поиск сначала среди вложенных 
+        for(Macros m : parentForSearch.getNestedMacroses()){   // поиск сначала среди вложенных
             if(m.getName().equals(name_)){ 
                 return m;
             }
         }
 
-        /*name_ = parentForSearch.getParentMacros().getName() + "." +name;
+
+       /* name_ = parentForSearch.getParentMacros().getName() + "." +name;
 
         for(Macros m : parentForSearch.getParentMacros().getNestedMacroses()){   // поиск среди того же уровня
             if(m.getName().equals(name_)){
@@ -255,17 +256,33 @@ public class MacroProcessor {
             }
         }*/
 
-        //recursive check here
-        if( ! currentMacrosesStack.getLast().equals(Macros.ROOT_MACROS)){
-            if(!currentMacrosesStack.getLast().isBrotherTo(parentForSearch)){
-                System.err.println("olololo\n\n");
-                return null;
+//        //recursive check here by LIST recursion - FAIL
+//        if( ! currentMacrosesStack.getLast().equals(Macros.ROOT_MACROS)){
+//            Macros temp = currentMacrosesStack.pollLast();
+//            Macros result = getMacrosByName(name);
+//            currentMacrosesStack.add(temp);
+//            return result;
+//        }
+
+        //iteration check by PARENTS
+         Macros currMacros = currentMacrosesStack.getLast().getParentMacros();
+
+         int par = 2;
+         while( par > 0){  //для избежания зацикливания (root тоже надо обработать)
+            name_ = currMacros.getName() + "." + name;
+
+            for(Macros m : currMacros.getNestedMacroses()){
+                if(m.getName().equals(name_)){
+                    return m;
+                }
             }
-            Macros temp = currentMacrosesStack.pollLast();
-            Macros result = getMacrosByName(name);
-            currentMacrosesStack.add(temp);
-            return result;
-        }
+
+            currMacros = currMacros.getParentMacros();
+
+            if(currMacros.getParentMacros().equals(Macros.ROOT_MACROS)){
+                par --;
+            }
+         }
 
         return null;
     }
