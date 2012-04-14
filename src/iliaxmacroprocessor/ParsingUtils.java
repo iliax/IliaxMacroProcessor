@@ -1,11 +1,11 @@
 
 package iliaxmacroprocessor;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.regex.Pattern;
-
 /**
  *
  * @author iliax
@@ -17,6 +17,36 @@ public class ParsingUtils {
     public static final String LS = System.getProperty("line.separator");
 
     static final String MACRO_END = "MEND";
+
+    /** bad code*/
+    public static INEQUALITY isInequality(String str){
+
+        if(str.contains(">") && !str.contains("=") && !str.contains("<")){
+           if(Lists.newArrayList(Splitter.on(">").trimResults().omitEmptyStrings().split(str)).size() == 2){
+               return INEQUALITY.GT;
+           }
+        }
+
+        if(str.contains("<") && !str.contains("=") && !str.contains(">")){
+           if(Lists.newArrayList(Splitter.on("<").trimResults().omitEmptyStrings().split(str)).size() == 2){
+               return INEQUALITY.LT;
+           }
+        }
+
+        if(str.contains("==") && !str.contains(">") && !str.contains("<")){
+           if(Lists.newArrayList(Splitter.on("==").trimResults().omitEmptyStrings().split(str)).size() == 2){
+               return INEQUALITY.EQ;
+           }
+        }
+
+        if(str.contains("!=") && !str.contains(">") && !str.contains("<")){
+           if(Lists.newArrayList(Splitter.on("!=").trimResults().omitEmptyStrings().split(str)).size() == 2){
+               return INEQUALITY.NOT_EQ;
+           }
+        }
+
+        return INEQUALITY.EMPTY;
+    }
 
     public static boolean checkMacroGenEnding(String end){
         List<String> lexems = getLexems(end);
@@ -34,6 +64,9 @@ public class ParsingUtils {
         return Lists.newArrayList(Splitter.on(" ").trimResults().omitEmptyStrings().split(str));
     }
 
+    public static List<String> getLexemsSplittedBy(String str, String splitter){
+        return Lists.newArrayList(Splitter.on(splitter).trimResults().omitEmptyStrings().split(str));
+    }
 
     public static boolean isValidLabelName(String lbl){
         if( Pattern.compile("^[A-Z_a-z]+([A-Za-z0-9_]){0,15}:$").matcher(lbl).matches() ){
@@ -54,11 +87,10 @@ public class ParsingUtils {
         } else {
            return -1;
         }
-
     }
 
     public static boolean isValidMacrosName(String name){
-        if(name.startsWith(".")){
+        if(name.startsWith(".")){   // we need it?
             return isValidMacrosName(name.substring(1));
         }
 
@@ -87,5 +119,9 @@ public class ParsingUtils {
         }
         
         return false;
+    }
+
+    public static boolean checkStringByPattern(String str, String pattern){
+        return Pattern.compile(pattern).matcher(str).matches() ;
     }
 }

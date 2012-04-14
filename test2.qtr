@@ -1,25 +1,22 @@
 MACRO m1 [x]
 
-MACROS1 x
+ MACRO m2 []
+  SET x 123
+  
+ MEND
 
-	MACRO m2 []
-	  macros2
-	MEND
-
-	MACRO m3 []
- 	  m2 []
-	  M []
-	MEND
-
- m3 []
+x
+call m2
+m2 [] 
+x
 MEND
 
-m1 [111]
-
-MACRO M []
+MACRO M [x]
   marrrr
-	***
-  m2 []
+  SET y 100
+  INC y
+  SET y 200
+  y
 MEND
  
-
+m1 [111]

@@ -37,7 +37,7 @@ public class MacroProcessor {
 
         currentMacrosesStack.add(Macros.ROOT_MACROS);
 
-        Macros.ROOT_MACROS.getNestedMacroses().clear(); //TODO 
+        Macros.ROOT_MACROS.getNestedMacroses().clear(); 
 
         int i = 0;
         int stringsSize = _strings.size();
@@ -66,7 +66,6 @@ public class MacroProcessor {
         Macros newMacros = parseMacrosHeader(_strings.get(stringNum), macroWordNum);
 
         if(newMacros == null){
-            //TODO
             throw new RuntimeException("invalid macros name! str " + stringNum);
         }
         
@@ -101,7 +100,11 @@ public class MacroProcessor {
             }
         }
 
-        _macroses.add(newMacros);   //TODO unique check
+        if(_macroses.contains(newMacros)){
+            throw new RuntimeException("this macros already defined");
+        }
+        
+        _macroses.add(newMacros);  
         LOG.info("new macros added:\n" + newMacros.toString());
 
         currentMacrosesStack.getLast().getParentMacros().getNestedMacroses().add(currentMacrosesStack.pollLast());
@@ -193,23 +196,14 @@ public class MacroProcessor {
 
         for(String s : macros.getStrings()){
 
-            List<String> lexems = getLexems(s);
-            List<String> toAppend = new ArrayList<String>();
-            
-            for(String lex : lexems){
-                String varVal = currentMacrosesStack.getLast().getVariables().getVariableVAlFromGlobalContext(lex);
-                if(varVal != null){
-                    toAppend.add(varVal);
-                } else {
-                    toAppend.add(lex);
-                }
+            if(MacrosCommand.processCommand(s, currentMacrosesStack.getLast())){ 
+                continue;
             }
 
-            s = Joiner.on(" ").join(toAppend);      ///TODO test it
+            s = replaceVarsByTheirValues(s);
 
             Macros m = checkMacroCall(s);
             if(m == null){
-
                 text.append(s);
                 text.append(LS);
             } else {
@@ -230,12 +224,28 @@ public class MacroProcessor {
         currentMacrosesStack.pollLast();
     }
 
+    private String replaceVarsByTheirValues(String str){
+        List<String> lexems = getLexems(str);
+        List<String> toAppend = new ArrayList<String>();
+
+        for(String lex : lexems){
+            String varVal = currentMacrosesStack.getLast().getVariables().getVariableVAlFromGlobalContext(lex);
+            if(varVal != null){
+                toAppend.add(varVal);
+            } else {
+                toAppend.add(lex);
+            }
+        }
+
+        String s = Joiner.on(" ").join(toAppend);
+        return s;
+    }
+
     private Macros getMacrosByName(String name){
 
         if(!isValidMacrosName(name)){
             return null;
-        }
-
+        }        
 
         String name_ = currentMacrosesStack.getLast().getName() + "." + name; 
 

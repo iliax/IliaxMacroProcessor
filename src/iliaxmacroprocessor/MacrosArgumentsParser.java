@@ -96,6 +96,11 @@ public class MacrosArgumentsParser {
             
         }
 
+        if(varCount < vs.varSeqCount()){
+            throw new RuntimeException("few arguments in this macros call!");
+        }
+
+
 //        // если арг не передан то можно попробовать поискать его у родителя
 //        if(varCount < vs.varSeqCount()){
 //            for(int i = varCount; i < vs.varSeqCount(); i++){
@@ -107,4 +112,5 @@ public class MacrosArgumentsParser {
 //        }
         
     }
+    
 }

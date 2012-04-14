@@ -79,10 +79,6 @@ public class Macros {
         return _parentMacros;
     }
 
-    public boolean isBrotherTo(Macros child){
-        return true; //TODO wite it
-    }
-
     public boolean addLabel(String lbl, Integer strNum){
         if(_labels.containsKey(lbl)){
             return false;
@@ -154,6 +150,7 @@ public class Macros {
         public VariablesStore() {
         }
 
+        /** имена позиц-ых аргументов в порядке обьявления */
         private List<String> varsSequence = new ArrayList<String>();
 
         public int varSeqCount(){
@@ -176,7 +173,7 @@ public class Macros {
         }
 
         public String getVariableVAlFromGlobalContext(String varName){
-            if(_variables.get(varName) != null && /*check it->*/ _variables.get(varName).getValue()!=null){ //TODO test it
+            if(_variables.get(varName) != null && _variables.get(varName).getValue() != null){
                 return _variables.get(varName).getValue();
             } else {
                 if(!Macros.this.getParentMacros().equals(ROOT_MACROS)){
@@ -218,6 +215,20 @@ public class Macros {
             } else {
                 _variables.get(varName).setValue(value);
                 return true;
+            }
+        }
+
+        public boolean setVariableValueInGlobalContext(String varName, String val){
+            if(_variables.get(varName) != null && _variables.get(varName).getValue() != null){
+                _variables.get(varName).setValue(val);
+                return true;
+            } else {
+                if(!Macros.this.getParentMacros().equals(ROOT_MACROS)){
+                    Macros.this.getParentMacros().getVariables().setVariableValueInGlobalContext(varName, val);
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
 

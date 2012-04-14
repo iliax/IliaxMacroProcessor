@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import  static iliaxmacroprocessor.ParsingUtils.*;
 /**
  *
  * @author iliax
@@ -43,4 +42,25 @@ public class MacroProcessorTest {
        assertEquals(arg.substring(0, arg.indexOf("=")), "q1");
        assertEquals(arg.substring(arg.indexOf("=")+1), "2");
     }
+
+    @Test
+    public void isInequalityTest(){
+        assertTrue(ParsingUtils.isInequality("3>3") == INEQUALITY.GT);
+        assertTrue(ParsingUtils.isInequality("3<3") == INEQUALITY.LT);
+        assertTrue(ParsingUtils.isInequality("3 > 3") == INEQUALITY.GT);
+        assertTrue(ParsingUtils.isInequality("3 != 3") == INEQUALITY.NOT_EQ);
+        assertTrue(ParsingUtils.isInequality("3==3") == INEQUALITY.EQ);
+        assertFalse(ParsingUtils.isInequality("3 >= 3") == INEQUALITY.GT);
+        assertTrue(ParsingUtils.isInequality("3== 3 3") == INEQUALITY.EQ);
+
+        assertTrue(MacrosCommand.checkInequality("3 == 3"));
+        assertTrue(MacrosCommand.checkInequality("qwe==qwe"));
+        assertFalse(MacrosCommand.checkInequality("32 == 3"));
+        assertTrue(MacrosCommand.checkInequality("3 < 23"));
+        assertTrue(MacrosCommand.checkInequality("123>33"));
+        assertTrue(MacrosCommand.checkInequality("3 != 32"));
+        assertFalse(MacrosCommand.checkInequality("3 != 3"));
+    }
+
+
 }
