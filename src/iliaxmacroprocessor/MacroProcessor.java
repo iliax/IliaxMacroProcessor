@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import static iliaxmacroprocessor.ParsingUtils.*;
+import static iliaxmacroprocessor.MacrosCommand.*;
 
 /**
  *  main algorithm class
@@ -116,7 +117,6 @@ public class MacroProcessor {
         LOG.info("2nd scan started");
         StringBuilder text = new StringBuilder();
         
-
         int i=0;
         while(i < _strings.size()){
             String s = _strings.get(i);
@@ -194,7 +194,9 @@ public class MacroProcessor {
             throw e;
         }
 
-        for(String s : macros.getStrings()){
+        for(int i=0; i < macros.getStrings().size(); i++){
+
+            String s = macros.getStrings().get(i);
 
             if(MacrosCommand.processCommand(s, currentMacrosesStack.getLast())){ 
                 continue;
@@ -256,8 +258,7 @@ public class MacroProcessor {
                 return m;
             }
         }
-
-
+        
        /* name_ = parentForSearch.getParentMacros().getName() + "." +name;
 
         for(Macros m : parentForSearch.getParentMacros().getNestedMacroses()){   // поиск среди того же уровня

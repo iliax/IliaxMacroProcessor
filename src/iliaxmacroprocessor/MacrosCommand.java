@@ -1,7 +1,6 @@
 
 package iliaxmacroprocessor;
 import java.util.List;
-import org.xml.sax.ext.LexicalHandler;
 import  static iliaxmacroprocessor.ParsingUtils.*;
 /**
  *
@@ -74,72 +73,5 @@ public class MacrosCommand {
         return false;
     }
 
-    /** bad code */
-    public static  boolean checkInequality(String str){
-        INEQUALITY inequalityType = isInequality(str);
-
-        if(inequalityType == INEQUALITY.EMPTY){
-            throw new RuntimeException("this is not inequality!");
-        }
-
-        List<String> lexems;
-
-        if(inequalityType == INEQUALITY.EQ){
-            lexems = getLexemsSplittedBy(str, "==");
-            if(lexems.get(0).trim().equals(lexems.get(1).trim())){
-                return true;
-            } else {
-                return false;
-            }
-        }
-        
-        if(inequalityType == INEQUALITY.NOT_EQ){
-            lexems = getLexemsSplittedBy(str, "!=");
-            if( ! lexems.get(0).trim().equals(lexems.get(1).trim())){
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if(inequalityType == INEQUALITY.GT){
-            lexems = getLexemsSplittedBy(str, ">");
-            Pair p = getNumberPairByLexems(lexems);
-            if(p == null){
-                return false;
-            }
-            return p.A > p.B;
-        }
-
-        if(inequalityType == INEQUALITY.LT){
-            lexems = getLexemsSplittedBy(str, "<");
-            Pair p = getNumberPairByLexems(lexems);
-            if(p == null){
-                return false;
-            }
-            return p.A < p.B;
-        }
-        
-        return false;
-    }
-
-    private static Pair getNumberPairByLexems(List<String> lexems){
-        int a, b;
-        try {
-            return new Pair(Integer.parseInt(lexems.get(0)), Integer.parseInt(lexems.get(1)));
-        } catch(NumberFormatException nfe){
-            return null;
-        }
-    }
-
-    private static class Pair {
-        public final int A;
-        public final int B;
-        
-        public Pair(int a1, int a2) {
-            this.A = a1;
-            this.B = a2;
-        }
-    }
-
+    
 }

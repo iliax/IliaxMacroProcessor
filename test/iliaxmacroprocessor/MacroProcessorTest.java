@@ -53,13 +53,13 @@ public class MacroProcessorTest {
         assertFalse(ParsingUtils.isInequality("3 >= 3") == INEQUALITY.GT);
         assertTrue(ParsingUtils.isInequality("3== 3 3") == INEQUALITY.EQ);
 
-        assertTrue(MacrosCommand.checkInequality("3 == 3"));
-        assertTrue(MacrosCommand.checkInequality("qwe==qwe"));
-        assertFalse(MacrosCommand.checkInequality("32 == 3"));
-        assertTrue(MacrosCommand.checkInequality("3 < 23"));
-        assertTrue(MacrosCommand.checkInequality("123>33"));
-        assertTrue(MacrosCommand.checkInequality("3 != 32"));
-        assertFalse(MacrosCommand.checkInequality("3 != 3"));
+        assertTrue(ParsingUtils.checkInequality("3 == 3"));
+        assertTrue(ParsingUtils.checkInequality("qwe==qwe"));
+        assertFalse(ParsingUtils.checkInequality("32 == 3"));
+        assertTrue(ParsingUtils.checkInequality("3 < 23"));
+        assertTrue(ParsingUtils.checkInequality("123>33"));
+        assertTrue(ParsingUtils.checkInequality("3 != 32"));
+        assertFalse(ParsingUtils.checkInequality("3 != 3"));
     }
 
 
