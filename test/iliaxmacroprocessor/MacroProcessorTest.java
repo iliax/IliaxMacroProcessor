@@ -5,6 +5,9 @@ package iliaxmacroprocessor;
  * and open the template in the editor.
  */
 
+import iliaxmacroprocessor.logic.INEQUALITY;
+import iliaxmacroprocessor.logic.ParsingUtils;
+import iliaxmacroprocessor.logic.MacroProcessor;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.junit.Test;
@@ -15,8 +18,6 @@ import static org.junit.Assert.*;
  * @author iliax
  */
 public class MacroProcessorTest {
-
-    MacroProcessor nullMacroProc = new MacroProcessor(null, null);
 
     public MacroProcessorTest() {
     }

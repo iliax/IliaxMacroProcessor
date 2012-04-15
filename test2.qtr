@@ -1,29 +1,25 @@
-MACRO m1 [x]
-
- MACRO m2 []
-  SET x 123  
- MEND
-x
-call m2
-m2 [] 
-x
-MEND
-
 MACRO M [ x ]
   'x' = x
-  IF [ x == 123 ]
-   ololo x
-  ENDIF
- 
-before while
-  WHILE [ x > 5 ]
+
+  before while
+
+  SET size 5  
+
+  WHILE [ x > size ]
     DEC x
-    x
-    IF [ x == 6 ]
-	'x' == 6 here
+    print => x
+
+    IF [ x == size ]
+	'x' == size - break
     ENDIF
+
   ENDW
- after while
+
+  after while
+  GOTO E1
+  // skip this..
+  E1: ending
+
 MEND
 
 

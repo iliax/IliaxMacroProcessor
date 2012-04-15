@@ -1,16 +1,19 @@
 MACRO m1 []
-SET x 2
-L1: 
-DEC x
+
+SET x 1
 1
+L1 : ololo
 2
+DEC x
 3
-4
-IF [ x > 0 ]
- GOTO L1
+IF [ x < 0 ]
+  GOTO L1
 ENDIF
-5
-6
+
+GOTO L2
+
+skip
+L2: ending
 MEND
 
 m1 []

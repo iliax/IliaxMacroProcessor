@@ -1,5 +1,8 @@
 package iliaxmacroprocessor;
 
+
+
+import iliaxmacroprocessor.gui.MainForm;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.swing.UIManager;
