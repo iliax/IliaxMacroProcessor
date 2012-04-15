@@ -14,14 +14,22 @@ public class MacrosCommand {
 
     public static final String INC = "INC";
 
-    private static void _incVarValue(String varName, Macros context){
+    public static final String IF = "IF";
+    public static final String END_IF = "ENDIF";
+
+    public static final String WHILE = "WHILE";
+    public static final String END_WHILE = "ENDW";
+
+    public static final String GOTO = "GOTO";
+
+    private static void _incVarValue(String varName, Macros context, int sh){
   
         String variableVAlFromGlobalContext = context.getVariables().getVariableVAlFromGlobalContext(varName);
 
         if(variableVAlFromGlobalContext != null){
             try {
                 int num = Integer.parseInt(variableVAlFromGlobalContext);
-                num++;
+                num+= sh;
                 
                 _setVariableVaue(varName, num+"", context);
 
@@ -33,10 +41,6 @@ public class MacrosCommand {
         }   
     }
 
-    /** COPYPASTE HERE!!! */
-    private static  void _decVarValue(String varName, Macros context){
-        _incVarValue(varName, context);
-    }
 
     private  static void _setVariableVaue(String varName, String val, Macros context){
         
@@ -52,26 +56,68 @@ public class MacrosCommand {
         }
     }
 
-    public  static boolean processCommand(String str, Macros context){
-        List<String> lexems = getLexems(str);
+    public static int  processCommand(Macros context, int currentMacrosLine, List<String> macrosStrings)
+            throws NoCommandException {
+        
+        List<String> lexems = getLexems(macrosStrings.get(currentMacrosLine));
 
         if(lexems.get(0).equals(SET) && lexems.size() == 3){
             _setVariableVaue(lexems.get(1), lexems.get(2), context);
-            return true;
+            return 0;
         }
 
         if(lexems.get(0).equals(INC) && lexems.size() == 2){
-            _incVarValue(lexems.get(1), context);
-            return true;
+            _incVarValue(lexems.get(1), context, 1);
+            return 0;
         }
 
         if(lexems.get(0).equals(DEC) && lexems.size() == 2){
-            _decVarValue(lexems.get(1), context);
-            return true;
+            _incVarValue(lexems.get(1), context, -1);
+            return 0;
         }
 
-        return false;
+        if(lexems.get(0).equals(IF) && lexems.size() >= 2){
+            return _processIfCommand(currentMacrosLine, macrosStrings, context);
+        }
+        if(lexems.get(0).equals(END_IF)){
+            return 0;
+        }
+
+        throw new NoCommandException();
     }
 
-    
+    public static int _processIfCommand(int currStr, List<String> macrosStrings, Macros context )
+            throws NoCommandException {
+        
+        String str = macrosStrings.get(currStr);
+
+        if((!str.contains("[")) || (!str.contains("]")) ){
+            throw new NoCommandException();
+        }
+
+        String s = MacroProcessor.replaceVarsByTheirValues(str, context);
+
+        boolean check = checkInequality(s.substring(s.indexOf("[")+1, s.indexOf("]")));
+        if(check == true){
+            return 0;
+        } else {
+            int count = 0;
+            int i = currStr +1;
+            while(true){
+                List<String> lexems = getLexems(macrosStrings.get(i)); //TODO index out of bounds exc
+
+                if(lexems.get(0).equals(END_IF)){
+                    count++;
+                    break;
+                }
+                count++;
+                i++;
+            }
+            return count;
+        }
+
+    }
+
+    public static class NoCommandException extends Exception {}
+
 }

@@ -127,6 +127,9 @@ public class ParsingUtils {
 
     /** bad code */
     public static  boolean checkInequality(String str){
+
+        str = str.trim();
+
         INEQUALITY inequalityType = isInequality(str);
 
         if(inequalityType == INEQUALITY.EMPTY){

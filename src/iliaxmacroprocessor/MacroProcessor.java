@@ -15,7 +15,7 @@ import static iliaxmacroprocessor.MacrosCommand.*;
 public class MacroProcessor {
 
     // позволять рекурсивный вызов макроса
-    public boolean enableRecursionMacrossCall = false;
+    public static boolean enableRecursionMacrossCall = true;
 
     private static final Logger LOG = Logger.getLogger(MacroProcessor.class.getName());
 
@@ -29,8 +29,7 @@ public class MacroProcessor {
 
     public MacroProcessor(GuiConfig guiConfig, List<String> strings) {
         _strings = strings;
-        _guiConfig = guiConfig;
-        
+        _guiConfig = guiConfig;     
     }
 
     public void start1stScan(){
@@ -198,40 +197,49 @@ public class MacroProcessor {
 
             String s = macros.getStrings().get(i);
 
-            if(MacrosCommand.processCommand(s, currentMacrosesStack.getLast())){ 
+            try {
+                int check = processCommand(currentMacrosesStack.getLast(), i, macros.getStrings());
+                i += check;
                 continue;
+            } catch(NoCommandException e){
+                //go on!
             }
 
-            s = replaceVarsByTheirValues(s);
+            s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast());
 
-            Macros m = checkMacroCall(s);
-            if(m == null){
-                text.append(s);
-                text.append(LS);
-            } else {
-                
-                if((!enableRecursionMacrossCall)
-                        && currentMacrosesStack.contains(m)){
-                    text.append("//"+ s +" <-- warning!");
-                    text.append(LS);
-                    LOG.warn("parent macros call");
-                    continue;
-                } else {
-                    processMacrosInjection(text, m, s);
+            processMacroCall(s, text);
 
-                }
-            }
         }
 
         currentMacrosesStack.pollLast();
     }
 
-    private String replaceVarsByTheirValues(String str){
+    private void processMacroCall(String s, StringBuilder text){
+         Macros m = checkMacroCall(s);
+        if(m == null){
+            text.append(s);
+            text.append(LS);
+        } else {
+
+            if((!enableRecursionMacrossCall)
+                    && currentMacrosesStack.contains(m)){
+                text.append("//"+ s +" <-- warning!");
+                text.append(LS);
+                LOG.warn("parent macros call");
+                //continue;  //TODO check this!!
+            } else {
+                processMacrosInjection(text, m, s);
+
+            }
+        }
+    }
+
+    public static String replaceVarsByTheirValues(String str, Macros currMacros){
         List<String> lexems = getLexems(str);
         List<String> toAppend = new ArrayList<String>();
 
         for(String lex : lexems){
-            String varVal = currentMacrosesStack.getLast().getVariables().getVariableVAlFromGlobalContext(lex);
+            String varVal = currMacros.getVariables().getVariableVAlFromGlobalContext(lex);
             if(varVal != null){
                 toAppend.add(varVal);
             } else {

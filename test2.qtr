@@ -1,22 +1,20 @@
 MACRO m1 [x]
 
  MACRO m2 []
-  SET x 123
-  
+  SET x 123  
  MEND
-
 x
 call m2
 m2 [] 
 x
 MEND
 
-MACRO M [x]
-  marrrr
-  SET y 100
-  INC y
-  SET y 200
-  y
+MACRO M [ x ]
+  'x' = x
+  IF [ x == 123 ]
+   ololo x
+  ENDIF
 MEND
- 
-m1 [111]
+
+
+M [ 123 ]
