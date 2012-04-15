@@ -249,12 +249,18 @@ public class MacroProcessor {
 
                 List<String> lexems = getLexems(macroStr);
                 List<String> toApp = new ArrayList<String>(lexems);
-
-
+                
                 if(lexems.get(0).startsWith(lbl)){
                     if(lexems.get(0).indexOf(":") != -1){
                         String newLbl = lexems.get(0).substring(0, lexems.get(0).indexOf(":"))+macros.getName()+":";
                         toApp.set(0, newLbl);
+                    }
+                }
+
+                for(int j=1; j < lexems.size(); j++){
+                    if(lexems.get(j).startsWith(lbl) && (!lexems.get(j-1).equals(GOTO))){     //TODO костыль
+                        String newLbl = lexems.get(j) + macros.getName();
+                        toApp.set(j, newLbl);
                     }
                 }
 

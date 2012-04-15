@@ -25,7 +25,9 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author iliax
  */
 public class MainForm extends javax.swing.JFrame {
+    
     private static final String LS = System.getProperty("line.separator");
+
     private static final Logger LOG = Logger.getLogger(MainForm.class.getName());
 
     private GuiConfig _guiConfig;
@@ -101,6 +103,19 @@ public class MainForm extends javax.swing.JFrame {
         });
 
         _sourseTextField.setFont(new java.awt.Font("Monospaced", 0, 12));
+        _sourseTextField.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                _sourseTextFieldCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                _sourseTextFieldInputMethodTextChanged(evt);
+            }
+        });
+        _sourseTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                _sourseTextFieldKeyTyped(evt);
+            }
+        });
         jScrollPane1.setViewportView(_sourseTextField);
 
         _outTextField.setFont(new java.awt.Font("Monospaced", 0, 12));
@@ -300,6 +315,7 @@ public class MainForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "no data to analyse");
             return;
         }
+        _textDataHolder.synchTextWithFile(_textDataHolder.file, _sourseTextField.getText());
 
         _logField.setText("");
         atomicBoolean.set(false);
@@ -351,6 +367,18 @@ public class MainForm extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         _logField.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void _sourseTextFieldInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event__sourseTextFieldInputMethodTextChanged
+
+    }//GEN-LAST:event__sourseTextFieldInputMethodTextChanged
+
+    private void _sourseTextFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event__sourseTextFieldCaretPositionChanged
+        
+    }//GEN-LAST:event__sourseTextFieldCaretPositionChanged
+
+    private void _sourseTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event__sourseTextFieldKeyTyped
+        
+    }//GEN-LAST:event__sourseTextFieldKeyTyped
 
     /**
      * @param args the command line arguments
