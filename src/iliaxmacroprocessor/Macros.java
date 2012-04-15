@@ -92,6 +92,10 @@ public class Macros {
         return _labels.containsKey(lbl);
     }
 
+    public Map<String, Integer> getLabels() {
+        return _labels;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Macros)) {

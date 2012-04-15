@@ -15,7 +15,7 @@ MACRO M [ x ]
    ololo x
   ENDIF
  
-beginwhile
+before while
   WHILE [ x > 5 ]
     DEC x
     x
@@ -23,7 +23,7 @@ beginwhile
 	'x' == 6 here
     ENDIF
   ENDW
- olololo11231
+ after while
 MEND
 
 

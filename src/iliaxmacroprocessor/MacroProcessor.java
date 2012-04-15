@@ -1,9 +1,12 @@
 package iliaxmacroprocessor;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import static iliaxmacroprocessor.ParsingUtils.*;
 import static iliaxmacroprocessor.MacrosCommand.*;
@@ -47,7 +50,7 @@ public class MacroProcessor {
             int check = checkMacroGenHeader(_strings.get(i));
 
             if(check != -1){
-                i = processMacroGeneration(i, check);
+                i = processMacroDefinition(i, check);
             } else {
                 i++;
             }
@@ -57,7 +60,7 @@ public class MacroProcessor {
     }
 
 
-    private int processMacroGeneration(int stringNum, int macroWordNum){
+    private int processMacroDefinition(int stringNum, int macroWordNum){
 
         String contextPrefix = "";
         
@@ -82,13 +85,10 @@ public class MacroProcessor {
             
             int checkHeader = checkMacroGenHeader(macroString);
 
-            if(checkHeader == -1){
+            if(checkHeader == -1){  // не обьявление нового макроса
                 LOG.info("adding new string: "+macroString);
 
-                String lbl = getLabelFromString(macroString);
-                if(lbl != null){
-                    currentMacrosesStack.getLast().addLabel(lbl, i - stringNum);
-                }
+                addLabel(macroString, i);
 
                 newMacros.getStrings().add(macroString);
 
@@ -96,7 +96,7 @@ public class MacroProcessor {
             } else {
                 LOG.info("starting nested macros definition");
                 
-                i = processMacroGeneration(i, checkHeader) + 1;
+                i = processMacroDefinition(i, checkHeader) + 1;
             }
         }
 
@@ -110,6 +110,20 @@ public class MacroProcessor {
         currentMacrosesStack.getLast().getParentMacros().getNestedMacroses().add(currentMacrosesStack.pollLast());
 
         return i;
+    }
+
+    private void addLabel(String str, int shift){
+        List<String> lexems = getLexems(str);
+
+        Macros currMacros = currentMacrosesStack.getLast();
+
+        if(isValidLabelName(lexems.get(0))){
+            if( ! currMacros.addLabel(lexems.get(0).substring(0, lexems.get(0).indexOf(":")), shift))
+            {
+                throw new RuntimeException("label "
+                        + lexems.get(0) +" already defined");
+            }
+        }
     }
 
     public void start2ndScan(){
@@ -181,17 +195,30 @@ public class MacroProcessor {
     private LinkedList<Macros> currentMacrosesStack = new LinkedList<Macros>();
 
     private void processMacrosInjection(StringBuilder text, Macros macros, String begining){
+        /////////////////////////////////
+        Map<String, Integer> labels = macros.getLabels();
+        for(String lbl : labels.keySet()){
+            for(int i=0; i < macros.getStrings().size(); i++){
+                String macroStr = macros.getStrings().get(i);
+
+                List<String> lexems = getLexems(macroStr);
+                List<String> toApp = new ArrayList<String>(lexems);
+
+                if(lexems.get(0).startsWith(lbl)){
+                    String newLbl = lexems.get(0).substring(0, lexems.get(0).indexOf(":"))+macros.getName()+":";
+                    toApp.set(0, newLbl);
+                }
+
+                macros.getStrings().set(i, Joiner.on(" ").join(toApp));
+            }
+        }
+        //////////////////////////////
         
         LOG.info("process macro injection: " + macros.getName());
 
         currentMacrosesStack.add(macros);
-
-        try {
-            _macrosArgumentsParser.setMacrosVars(begining, macros);
-        } catch(RuntimeException e){
-            LOG.error("err", e);
-            throw e;
-        }
+       
+        _macrosArgumentsParser.setMacrosVars(begining, macros);
 
         for(int i=0; i < macros.getStrings().size(); i++){
 
@@ -287,7 +314,7 @@ public class MacroProcessor {
     }
 
     private void processMacroCall(String s, StringBuilder text){
-         Macros m = checkMacroCall(s);
+        Macros m = checkMacroCall(s);
         if(m == null){
             text.append(s);
             text.append(LS);
@@ -300,6 +327,8 @@ public class MacroProcessor {
                 LOG.warn("parent macros call");
                 //continue;  //TODO check this!!
             } else {
+                
+                //иньектим строки
                 processMacrosInjection(text, m, s);
 
             }

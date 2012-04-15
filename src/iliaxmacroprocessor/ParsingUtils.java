@@ -105,7 +105,7 @@ public class ParsingUtils {
 
          if( ! lexems.isEmpty()){
              if(isValidLabelName(lexems.get(0))){
-                 return lexems.get(0);
+                 return lexems.get(0).substring(0, lexems.get(0).indexOf(":"));
              }
          }
 

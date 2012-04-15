@@ -1,8 +1,17 @@
-qwe qweqw
-das
+MACRO m1 []
+SET x 2
+L1: 
+DEC x
+1
+2
+3
+4
+IF [ x > 0 ]
+ GOTO L1
+ENDIF
+5
+6
+MEND
 
+m1 []
 
-qwe
-
-`12`12
-333

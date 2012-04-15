@@ -60,6 +60,7 @@ public class MacrosCommand {
             throws NoCommandException {
         
         List<String> lexems = getLexems(context.getStrings().get(currentMacrosLine));
+        String str = context.getStrings().get(currentMacrosLine);
 
         if(lexems.get(0).equals(SET) && lexems.size() == 3){
             _setVariableVaue(lexems.get(1), lexems.get(2), context);
@@ -81,6 +82,10 @@ public class MacrosCommand {
         }
         if(lexems.get(0).equals(END_IF)){
             return 0;
+        }
+
+        if(lexems.get(0).equals(GOTO) && lexems.size() >= 2){
+            return processGOTOCommand(context, lexems.get(1), currentMacrosLine);
         }
 
         throw new NoCommandException();
@@ -116,6 +121,15 @@ public class MacrosCommand {
             return count;
         }
 
+    }
+
+    private static int processGOTOCommand(Macros context, String lbl, int currentMacrosLine) {
+
+        if(context.isLabelExist(lbl)){
+            return context.getLabels().get(lbl) - currentMacrosLine - 1;
+        }
+
+        throw new RuntimeException("no label with this name");
     }
 
     public static class NoCommandException extends Exception {}
