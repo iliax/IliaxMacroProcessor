@@ -24,3 +24,13 @@ MEND
 
 
 M [ 10 ]
+
+MACRO m []
+ L1: qwe
+ add L1
+MEND
+
+******
+m []
+m []
+m []
