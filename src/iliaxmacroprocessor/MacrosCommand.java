@@ -56,10 +56,10 @@ public class MacrosCommand {
         }
     }
 
-    public static int  processCommand(Macros context, int currentMacrosLine, List<String> macrosStrings)
+    public static int  processCommand(Macros context, int currentMacrosLine)
             throws NoCommandException {
         
-        List<String> lexems = getLexems(macrosStrings.get(currentMacrosLine));
+        List<String> lexems = getLexems(context.getStrings().get(currentMacrosLine));
 
         if(lexems.get(0).equals(SET) && lexems.size() == 3){
             _setVariableVaue(lexems.get(1), lexems.get(2), context);
@@ -77,7 +77,7 @@ public class MacrosCommand {
         }
 
         if(lexems.get(0).equals(IF) && lexems.size() >= 2){
-            return _processIfCommand(currentMacrosLine, macrosStrings, context);
+            return _processIfCommand(currentMacrosLine, context);
         }
         if(lexems.get(0).equals(END_IF)){
             return 0;
@@ -86,10 +86,10 @@ public class MacrosCommand {
         throw new NoCommandException();
     }
 
-    public static int _processIfCommand(int currStr, List<String> macrosStrings, Macros context )
+    public static int _processIfCommand(int currStr, Macros context )
             throws NoCommandException {
         
-        String str = macrosStrings.get(currStr);
+        String str = context.getStrings().get(currStr);
 
         if((!str.contains("[")) || (!str.contains("]")) ){
             throw new NoCommandException();
@@ -104,7 +104,7 @@ public class MacrosCommand {
             int count = 0;
             int i = currStr +1;
             while(true){
-                List<String> lexems = getLexems(macrosStrings.get(i)); //TODO index out of bounds exc
+                List<String> lexems = getLexems(context.getStrings().get(i)); //TODO index out of bounds exc
 
                 if(lexems.get(0).equals(END_IF)){
                     count++;

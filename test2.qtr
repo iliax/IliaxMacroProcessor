@@ -14,7 +14,17 @@ MACRO M [ x ]
   IF [ x == 123 ]
    ololo x
   ENDIF
+ 
+beginwhile
+  WHILE [ x > 5 ]
+    DEC x
+    x
+    IF [ x == 6 ]
+	'x' == 6 here
+    ENDIF
+  ENDW
+ olololo11231
 MEND
 
 
-M [ 123 ]
+M [ 10 ]

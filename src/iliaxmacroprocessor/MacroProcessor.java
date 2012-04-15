@@ -198,10 +198,18 @@ public class MacroProcessor {
             String s = macros.getStrings().get(i);
 
             try {
-                int check = processCommand(currentMacrosesStack.getLast(), i, macros.getStrings());
+                int check = processCommand(macros, i);
                 i += check;
                 continue;
             } catch(NoCommandException e){
+                //go on!
+            }
+
+            try {
+                int check = processWhileCommand(i, text);
+                i += check;
+                continue;
+            } catch(NoCommandException e ){
                 //go on!
             }
 
@@ -212,6 +220,70 @@ public class MacroProcessor {
         }
 
         currentMacrosesStack.pollLast();
+    }
+
+    // mutable bullshit
+    private int processWhileCommand(int currentStr, StringBuilder text) throws NoCommandException {
+        Macros currMacros = currentMacrosesStack.getLast();
+        String whileHeader = currMacros.getStrings().get(currentStr);
+
+        List<String> lexems = getLexems(whileHeader);
+
+        if(!lexems.get(0).equals(WHILE)){
+            throw new NoCommandException();
+        }
+
+        if((!whileHeader.contains("[")) || (!whileHeader.contains("]")) ){
+            throw new NoCommandException();
+        }
+
+        whileHeader = MacroProcessor.replaceVarsByTheirValues(whileHeader, currMacros);
+
+        boolean ch = checkInequality(whileHeader.substring(whileHeader.indexOf("[")+1, whileHeader.indexOf("]")));
+        if(ch == false){
+            for(int i = currentStr + 1, j = 0; i < currMacros.getStrings().size(); i++, j++){
+                if(currMacros.getStrings().get(i).contains(END_WHILE)){
+                    return j+1;
+                }
+            }
+        } else {
+            
+            //////////////////////////////////
+            for(int i = currentStr + 1; i<currMacros.getStrings().size(); i++){
+                String s = currMacros.getStrings().get(i);
+
+                if(s.contains(END_WHILE)){
+                    return -1; //чтобы остаться там же 
+                }
+
+                /////////////////////////////
+                    try {
+                        int check = processCommand(currMacros, i);
+                        i += check;
+                        continue;
+                    } catch(NoCommandException e){
+                        //go on!
+                    }
+
+                    try {
+                        int check = processWhileCommand(i, text);
+                        i += check;
+                        continue;
+                    } catch(NoCommandException e ){
+                        //go on!
+                    }
+
+                    s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast());
+
+                    processMacroCall(s, text);
+               //////////////////////////////////////////
+
+            }
+
+            //////////////////////////////////
+        }
+        
+        throw new NoCommandException();
     }
 
     private void processMacroCall(String s, StringBuilder text){
