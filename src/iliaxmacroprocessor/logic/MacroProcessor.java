@@ -40,7 +40,19 @@ public class MacroProcessor {
         atomicBoolean = ab;
     }
 
+    public  void updateMAcrosesList(){
+
+        String [] mNames = new String[_macroses.size()+1];
+        for(int i = 0; i < _macroses.size(); i++){
+            mNames[i] = _macroses.get(i).getName();
+        }
+
+        _guiConfig.macrosesList.setListData(mNames);
+    }
+
     public void start1stScan(){
+        updateMAcrosesList();
+
         LOG.info("==================================");
         LOG.info("   FIRST SCAN");
         LOG.info("==================================");
@@ -75,11 +87,16 @@ public class MacroProcessor {
 
         _guiConfig.secScanButt.setVisible(true);
 
-        tryLock();
+        updateMAcrosesList();
+
+        atomicBoolean.set(false);
+       
 
         LOG.info("==================================");
         LOG.info("   SECOND SCAN");
         LOG.info("==================================");
+
+        tryLock();
 
         start2ndScan();
 
@@ -141,6 +158,7 @@ public class MacroProcessor {
         
         _macroses.add(newMacros);  
         LOG.info("new macros added: " + newMacros.getName());
+        updateMAcrosesList();
         tryLock();
 
         currentMacrosesStack.getLast().getParentMacros().getNestedMacroses().add(currentMacrosesStack.pollLast());

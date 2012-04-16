@@ -7,6 +7,7 @@ package iliaxmacroprocessor.gui;
 
 import iliaxmacroprocessor.logging.ConsoleAppenderImpl;
 import iliaxmacroprocessor.logic.MacroProcessor;
+import iliaxmacroprocessor.logic.Macros;
 import iliaxmacroprocessor.logic.TextDataHolder;
 import java.awt.FileDialog;
 import java.io.File;
@@ -33,11 +34,11 @@ public class MainForm extends javax.swing.JFrame {
     private GuiConfig _guiConfig;
     private TextDataHolder _textDataHolder;
 
-    AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+    volatile AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 
     private Thread _workingThread = null;
 
-    private MacroProcessor macroProcessor;
+    private volatile MacroProcessor macroProcessor;
     /** Creates new form MainForm */
     public MainForm() {
 
@@ -57,7 +58,10 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        _guiConfig = new GuiConfig(_sourseTextField, _outTextField, _start2ndScanButt, _nextStepButton, _endButton);
+        _guiConfig = new GuiConfig(_sourseTextField, _outTextField, _start2ndScanButt,
+                _nextStepButton, _endButton, _macrosesList);
+
+        
     }
 
     /** This method is called from within the constructor to
@@ -82,7 +86,7 @@ public class MainForm extends javax.swing.JFrame {
         _macrosesList = new javax.swing.JList();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        _macrosStrings = new javax.swing.JTextArea();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
         _logField = new javax.swing.JTextPane();
@@ -146,13 +150,18 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
+        _macrosesList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                _macrosesListValueChanged(evt);
+            }
+        });
         jScrollPane3.setViewportView(_macrosesList);
 
         jLabel3.setText("Macroses:");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane4.setViewportView(jTextArea1);
+        _macrosStrings.setColumns(20);
+        _macrosStrings.setRows(5);
+        jScrollPane4.setViewportView(_macrosStrings);
 
         jLabel4.setText("Macros data:");
 
@@ -227,13 +236,12 @@ public class MainForm extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel5)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 601, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(_start2ndScanButt)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1))))
+                    .addComponent(jLabel5)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(_start2ndScanButt)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 403, Short.MAX_VALUE)
+                        .addComponent(jButton1))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -315,12 +323,20 @@ public class MainForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "no data to analyse");
             return;
         }
+
+        if(_workingThread != null && _workingThread.isAlive()){
+            try {
+                _workingThread.stop();
+            } catch(Exception e){}
+        }
+
         _textDataHolder.synchTextWithFile(_textDataHolder.file, _sourseTextField.getText());
 
         _logField.setText("");
         atomicBoolean.set(false);
 
         _outTextField.setText("");
+        _macrosStrings.setText("");
 
         macroProcessor = new MacroProcessor(_guiConfig, _textDataHolder.getStrings(TextDataHolder.NO_EMPTY_STRINGS), atomicBoolean);
         //macroProcessor.start1stScan();
@@ -329,10 +345,16 @@ public class MainForm extends javax.swing.JFrame {
 
             @Override
             public void run() {
-                macroProcessor.start1stScan();
+                try {
+                    macroProcessor.start1stScan();
+                } catch(IndexOutOfBoundsException ioobe){
+                    LOG.info("ОШИБКА! НЕ ЗАКРЫТЫЙ БЛОК!");
+                } catch(Exception e){
+                    LOG.info(e.getMessage());
+                }
             }
         };
-
+        
         _workingThread.start();
 
         _nextStepButton.setEnabled(true);
@@ -380,6 +402,20 @@ public class MainForm extends javax.swing.JFrame {
         
     }//GEN-LAST:event__sourseTextFieldKeyTyped
 
+    private void _macrosesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event__macrosesListValueChanged
+        if(macroProcessor != null){
+
+            if(_macrosesList.getSelectedValue() != null && _macrosesList.getSelectedIndex() != -1){
+                String mName = _macrosesList.getSelectedValue().toString();
+                for(Macros m: macroProcessor._macroses){
+                    if(mName.equals(m.getName())){
+                        _macrosStrings.setText(m.toString());
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event__macrosesListValueChanged
+
     /**
      * @param args the command line arguments
      */
@@ -411,6 +447,7 @@ public class MainForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton _endButton;
     private javax.swing.JTextPane _logField;
+    private javax.swing.JTextArea _macrosStrings;
     private javax.swing.JList _macrosesList;
     private javax.swing.JButton _nextStepButton;
     private javax.swing.JMenuItem _openMenuItem;
@@ -432,6 +469,5 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }

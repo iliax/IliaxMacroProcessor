@@ -115,24 +115,21 @@ public class Macros {
 
     @Override
     public String toString() {
-        String str = "MACROS " + _name + " [...]";
+        String str = "MACROS " + _name + " "+ _variables.varsSequence + "\n";
 
-        str += "\n";
         for (String s : _strings) {
-            str += " " + s + "\n";
+            str += "   " + s + "\n";
         }
-        str += "MEND" + " nested: ";
+        str += "MEND \n" + "nested: ";
+        
         if (_nestedMacroses.isEmpty()) {
             str += "N0NE";
         } else {
             for (Macros m : _nestedMacroses) {
-                str += m.getName() + "[] ";
+                str += m.getName() + ", ";
             }
+            str = str.substring(0, str.length() - 2);
         }
-
-        str += "\n" + getVariables().toString();
-
-        str += "\n" + _labels.toString();
 
         return str;
     }
@@ -166,11 +163,13 @@ public class Macros {
         }
 
 
-        public boolean addVariable(String varName){
+        public boolean addVariable(String varName, boolean isParameter){
             if(_variables.containsKey(varName)){
                 return false;
             } else {
-                varsSequence.add(varName);
+                if(isParameter){
+                    varsSequence.add(varName);
+                }
                 _variables.put(varName, new Variable(varName));
                 return true;
             }

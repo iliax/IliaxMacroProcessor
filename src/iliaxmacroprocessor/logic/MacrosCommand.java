@@ -61,7 +61,7 @@ public class MacrosCommand {
         if(context.getVariables().getVariableVAlFromGlobalContext(varName) != null){
             context.getVariables().setVariableValueInGlobalContext(varName, val);
         } else {
-            context.getVariables().addVariable(varName);
+            context.getVariables().addVariable(varName, false);
             context.getVariables().setVariableValue(varName, val);
         }
     }

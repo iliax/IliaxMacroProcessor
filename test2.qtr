@@ -30,7 +30,4 @@ MACRO m []
  add L1
 MEND
 
-******
-m []
-m []
-m []
+

@@ -34,7 +34,7 @@ public class MacrosArgumentsParser {
                 if(!isValidVariableName(arg)){
                     throw new RuntimeException("invalid arg format");
                 }
-                currentMacros.getVariables().addVariable(arg);
+                currentMacros.getVariables().addVariable(arg, true);
             } else {
                 //позиционный
                 String varName = arg.substring(0, arg.indexOf("="));

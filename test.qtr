@@ -10,6 +10,15 @@ IF [ x < 0 ]
   GOTO L1
 ENDIF
 
+MACRO m1 []
+m1111
+MEND
+
+MACRO m2 []
+m2222
+MEND
+
+**
 GOTO L2
 
 skip
