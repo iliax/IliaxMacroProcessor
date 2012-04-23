@@ -100,6 +100,10 @@ public class ParsingUtils {
         return false;
     }
 
+    public static boolean isValidCommandName(String str){
+        return isValidVariableName(str);
+    }
+
     public static String getLabelFromString(String str){
          List<String> lexems = getLexems(str);
 
@@ -133,7 +137,7 @@ public class ParsingUtils {
         INEQUALITY inequalityType = isInequality(str);
 
         if(inequalityType == INEQUALITY.EMPTY){
-            throw new RuntimeException("this is not inequality!");
+            throw new RuntimeException("this is not inequality in [ ] block!");
         }
 
         List<String> lexems;
@@ -182,6 +186,53 @@ public class ParsingUtils {
             return new Pair(Integer.parseInt(lexems.get(0)), Integer.parseInt(lexems.get(1)));
         } catch(NumberFormatException nfe){
             return null;
+        }
+    }
+
+    public static void checkIsStrValidAsseblerStr(String str) throws RuntimeException {
+
+        String err = "\n'"+str+"' - invalid ASSEBLER instruction";
+
+        List<String> lexems = getLexems(str);
+        
+        if(str.contains("[") || str.contains("]") || lexems.size() > 4){
+            throw new RuntimeException(err);
+        }
+
+        if(isValidLabelName(lexems.get(0))){
+            if(isValidCommandName(lexems.get(1)) &&
+                    (isNumber(lexems.get(2)) || isValidVariableName(lexems.get(2)) )){
+                if(lexems.size() == 3){
+                    return;
+                } else { // size == 4
+                    if(isNumber(lexems.get(3)) || isValidVariableName(lexems.get(3))){
+                        return;
+                    }
+                }
+            }
+        } else {
+
+            if(isValidCommandName(lexems.get(0)) &&
+                    (isNumber(lexems.get(1)) || isValidVariableName(lexems.get(1)) )){
+                if(lexems.size() == 2){
+                    return;
+                } else if(lexems.size() == 3) { // size == 3
+                    if(isNumber(lexems.get(2)) || isValidVariableName(lexems.get(2))){
+                        return;
+                    }
+                }
+            }
+        }
+
+        throw new RuntimeException(err);
+    }
+
+    public static boolean isNumber(String str){
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
         }
     }
 

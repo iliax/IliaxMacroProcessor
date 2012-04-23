@@ -1,4 +1,3 @@
-
 package iliaxmacroprocessor.logic;
 
 import java.util.List;

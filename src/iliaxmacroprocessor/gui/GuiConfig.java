@@ -3,6 +3,7 @@
 package iliaxmacroprocessor.gui;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextPane;
 
@@ -16,11 +17,13 @@ public class GuiConfig {
 
     public final JTextPane outTextField;
 
-    public final JButton secScanButt, nextButt, endButt;
+    public final JButton  nextButt, endButt;
+
+    public final JLabel secScanButt;
 
     public final JList macrosesList;
 
-    public GuiConfig(JTextPane sourseTextField, JTextPane outTextField, JButton sec,JButton next,JButton end, JList lst) {
+    public GuiConfig(JTextPane sourseTextField, JTextPane outTextField, JLabel sec,JButton next,JButton end, JList lst) {
         this.sourseTextField = sourseTextField;
         this.outTextField = outTextField;
         secScanButt = sec;

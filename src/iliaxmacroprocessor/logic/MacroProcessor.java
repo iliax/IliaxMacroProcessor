@@ -523,6 +523,13 @@ public class MacroProcessor {
         if(text == null){
             return;
         }
+
+        if(str.contains(LS)){
+            checkIsStrValidAsseblerStr(str.substring(0, str.indexOf(LS)));
+        } else {
+            checkIsStrValidAsseblerStr(str);
+        }
+
         text.append(str);
         _guiConfig.outTextField.setText(text.toString());
     }

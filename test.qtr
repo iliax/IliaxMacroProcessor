@@ -1,28 +1,10 @@
 MACRO m1 []
 
-SET x 1
-1
-L1 : ololo
-2
-DEC x
-3
-IF [ x < 0 ]
-  GOTO L1
-ENDIF
+ IF [ 1 == 1 ]
+  add1 r1 r2
+  qwe ==12
+ ENDIF
 
-MACRO m1 []
-m1111
-MEND
-
-MACRO m2 []
-m2222
-MEND
-
-**
-GOTO L2
-
-skip
-L2: ending
 MEND
 
 m1 []

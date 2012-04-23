@@ -80,7 +80,6 @@ public class MainForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         _start1stScanButt = new javax.swing.JButton();
-        _start2ndScanButt = new javax.swing.JButton();
         _nextStepButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         _macrosesList = new javax.swing.JList();
@@ -93,6 +92,7 @@ public class MainForm extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         _endButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        _start2ndScanButt = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         _openMenuItem = new javax.swing.JMenuItem();
@@ -136,13 +136,6 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        _start2ndScanButt.setText("SECOND SCAN ");
-        _start2ndScanButt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                _start2ndScanButtActionPerformed(evt);
-            }
-        });
-
         _nextStepButton.setText("Next Step");
         _nextStepButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -182,6 +175,8 @@ public class MainForm extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+
+        _start2ndScanButt.setText("SECOND SCAN");
 
         jMenu1.setText("File");
 
@@ -237,9 +232,9 @@ public class MainForm extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel5)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(_start2ndScanButt)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 403, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 435, Short.MAX_VALUE)
                         .addComponent(jButton1))
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE))
                 .addContainerGap())
@@ -273,9 +268,9 @@ public class MainForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(_start1stScanButt)
                     .addComponent(_nextStepButton)
-                    .addComponent(_start2ndScanButt)
                     .addComponent(_endButton)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(_start2ndScanButt))
                 .addContainerGap())
         );
 
@@ -350,7 +345,7 @@ public class MainForm extends javax.swing.JFrame {
                 } catch(IndexOutOfBoundsException ioobe){
                     LOG.info("ОШИБКА! НЕ ЗАКРЫТЫЙ БЛОК!");
                 } catch(Exception e){
-                    LOG.info(e.getMessage());
+                    LOG.info("ОШИБКА! "+e.getMessage());
                 }
             }
         };
@@ -361,10 +356,6 @@ public class MainForm extends javax.swing.JFrame {
         _endButton.setEnabled(true);
 
     }//GEN-LAST:event__start1stScanButtActionPerformed
-
-    private void _start2ndScanButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__start2ndScanButtActionPerformed
-        
-    }//GEN-LAST:event__start2ndScanButtActionPerformed
 
     private void _nextStepButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__nextStepButtonActionPerformed
     
@@ -455,7 +446,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JMenuItem _saveMenuItem;
     private javax.swing.JTextPane _sourseTextField;
     private javax.swing.JButton _start1stScanButt;
-    private javax.swing.JButton _start2ndScanButt;
+    private javax.swing.JLabel _start2ndScanButt;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
