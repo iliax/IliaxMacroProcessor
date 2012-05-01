@@ -33,8 +33,8 @@ public class MacroProcessorTest {
 
     @Test
     public void isLabel(){
-        assertTrue(ParsingUtils.isValidLabelName("L1:"));
-        assertFalse(ParsingUtils.isValidLabelName("L1"));
+        assertTrue(ParsingUtils.isValidMacroLabelName("L1:"));
+        assertFalse(ParsingUtils.isValidMacroLabelName("L1"));
     }
 
     @Test

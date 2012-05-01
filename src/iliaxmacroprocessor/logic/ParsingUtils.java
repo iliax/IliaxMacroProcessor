@@ -67,8 +67,18 @@ public class ParsingUtils {
         return Lists.newArrayList(Splitter.on(splitter).trimResults().omitEmptyStrings().split(str));
     }
 
-    public static boolean isValidLabelName(String lbl){
+    public static boolean isValidMacroLabelName(String lbl){
+        if( Pattern.compile("^.[A-Z_a-z]+([A-Za-z0-9_]){0,15}:$").matcher(lbl).matches() ){
+            return true;
+        } 
+
+        return false;
+    }
+
+        public static boolean isValidAssLabelName(String lbl){
         if( Pattern.compile("^[A-Z_a-z]+([A-Za-z0-9_]){0,15}:$").matcher(lbl).matches() ){
+            return true;
+        } else if(Pattern.compile("^[A-Z_a-z]+([A-Za-z0-9_]){0,15}[_]:$").matcher(lbl).matches() ){
             return true;
         }
 
@@ -108,7 +118,7 @@ public class ParsingUtils {
          List<String> lexems = getLexems(str);
 
          if( ! lexems.isEmpty()){
-             if(isValidLabelName(lexems.get(0))){
+             if(isValidMacroLabelName(lexems.get(0))){
                  return lexems.get(0).substring(0, lexems.get(0).indexOf(":"));
              }
          }
@@ -164,7 +174,7 @@ public class ParsingUtils {
             lexems = getLexemsSplittedBy(str, ">");
             Pair p = getNumberPairByLexems(lexems);
             if(p == null){
-                return false;
+                throw new RuntimeException("you cant compare strings with '>'");
             }
             return p.A > p.B;
         }
@@ -173,7 +183,7 @@ public class ParsingUtils {
             lexems = getLexemsSplittedBy(str, "<");
             Pair p = getNumberPairByLexems(lexems);
             if(p == null){
-                return false;
+                throw new RuntimeException("you cant compare strings with '<'");
             }
             return p.A < p.B;
         }
@@ -193,13 +203,27 @@ public class ParsingUtils {
 
         String err = "\n'"+str+"' - invalid ASSEBLER instruction";
 
-        List<String> lexems = getLexems(str);
+        return;
+
+        /*List<String> lexems = getLexems(str);
         
         if(str.contains("[") || str.contains("]") || lexems.size() > 4){
             throw new RuntimeException(err);
         }
 
-        if(isValidLabelName(lexems.get(0))){
+        if(lexems.size() == 1){
+            if(isValidCommandName(lexems.get(0))){
+                return;
+            }
+        }
+
+        if(lexems.size() == 1){
+            if(isValidMacroLabelName(lexems.get(0))){
+                return;
+            }
+        }
+
+        if(isValidMacroLabelName(lexems.get(0))){
             if(isValidCommandName(lexems.get(1)) &&
                     (isNumber(lexems.get(2)) || isValidVariableName(lexems.get(2)) )){
                 if(lexems.size() == 3){
@@ -224,7 +248,7 @@ public class ParsingUtils {
             }
         }
 
-        throw new RuntimeException(err);
+       throw new RuntimeException(err);*/
     }
 
     public static boolean isNumber(String str){

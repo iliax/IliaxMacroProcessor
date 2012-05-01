@@ -140,7 +140,7 @@ public class MacrosCommand {
             return context.getLabels().get(lbl) - currentMacrosLine - 2;
         }
 
-        throw new RuntimeException("no label with this name");
+        throw new RuntimeException("no label with this name: "+lbl);
     }
 
     public static class NoCommandException extends Exception {}

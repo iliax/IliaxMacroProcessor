@@ -1,5 +1,5 @@
 MACRO M [ x ]
-  'x' = x
+  aadd qw 12
 
   before while
 
@@ -14,6 +14,10 @@ MACRO M [ x ]
     ENDIF
 
   ENDW
+
+  MACRO mac []
+    ololo
+  MEND
 
   after while
   GOTO E1

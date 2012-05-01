@@ -32,7 +32,7 @@ public class MacroProcessor {
 
     private static AtomicBoolean atomicBoolean;
 
-    StringBuilder text;
+    StringBuffer text;
 
     public MacroProcessor(GuiConfig guiConfig, List<String> strings, AtomicBoolean ab) {
         _strings = strings;
@@ -171,8 +171,8 @@ public class MacroProcessor {
 
         Macros currMacros = currentMacrosesStack.getLast();
 
-        if(isValidLabelName(lexems.get(0))){
-            if( ! currMacros.addLabel(lexems.get(0).substring(0, lexems.get(0).indexOf(":")), shift))
+        if(isValidMacroLabelName(lexems.get(0))){
+            if( ! currMacros.addLabel(lexems.get(0).substring(1, lexems.get(0).indexOf(":")), shift))
             {
                 throw new RuntimeException("label "
                         + lexems.get(0) +" already defined");
@@ -186,7 +186,7 @@ public class MacroProcessor {
     public void start2ndScan(){
         LOG.info("2nd scan started");
         
-        text = new StringBuilder();
+        text = new StringBuffer();
 
         int i=0;
         while(i < _strings.size()){
@@ -258,33 +258,27 @@ public class MacroProcessor {
 
     private LinkedList<Macros> currentMacrosesStack = new LinkedList<Macros>();
 
-    private void processMacrosInjection(StringBuilder text, Macros macros, String begining){
+    private void processMacrosInjection(StringBuffer text, Macros macros, String begining){
         /////////////////////////////////
-        Map<String, Integer> labels = macros.getLabels();
-        for(String lbl : labels.keySet()){
+
+        // LABELS processing
             for(int i=0; i < macros.getStrings().size(); i++){
                 String macroStr = macros.getStrings().get(i);
 
                 List<String> lexems = getLexems(macroStr);
                 List<String> toApp = new ArrayList<String>(lexems);
                 
-                if(lexems.get(0).startsWith(lbl)){
+                if(isValidAssLabelName(lexems.get(0))){
                     if(lexems.get(0).indexOf(":") != -1){
-                        String newLbl = lexems.get(0).substring(0, lexems.get(0).indexOf(":"))+macros.getName()+":";
+                        String newLbl =
+                                lexems.get(0).substring(0, lexems.get(0).indexOf(":"))+"_:";
                         toApp.set(0, newLbl);
-                    }
-                }
-
-                for(int j=1; j < lexems.size(); j++){
-                    if(lexems.get(j).startsWith(lbl) && (!lexems.get(j-1).equals(GOTO))){     //TODO костыль
-                        String newLbl = lexems.get(j) + macros.getName();
-                        toApp.set(j, newLbl);
                     }
                 }
 
                 macros.getStrings().set(i, Joiner.on(" ").join(toApp));
             }
-        }
+        
         //////////////////////////////
         
         LOG.info("process macros injection: " + macros.getName());
@@ -325,7 +319,7 @@ public class MacroProcessor {
     }
 
     // mutable bullshit
-    private int processWhileCommand(int currentStr, StringBuilder text) throws NoCommandException {
+    private int processWhileCommand(int currentStr, StringBuffer text) throws NoCommandException {
         Macros currMacros = currentMacrosesStack.getLast();
         String whileHeader = currMacros.getStrings().get(currentStr);
 
@@ -396,7 +390,7 @@ public class MacroProcessor {
         throw new NoCommandException();
     }
 
-    private void processMacroCall(String s, StringBuilder text){
+    private void processMacroCall(String s, StringBuffer text){
         Macros m = checkMacroCall(s);
         if(m == null){
             LOG.info("appeding string: " + s);
@@ -519,9 +513,14 @@ public class MacroProcessor {
     }
 
 
-    public void appendText(String str){
-        if(text == null){
+    public synchronized  void appendText(String str){
+        if(text == null || str.trim().isEmpty()){
             return;
+        }
+
+        List<String> lexems = getLexems(str);
+        if(isValidMacroLabelName(lexems.get(0))){
+            str = str.replaceAll(lexems.get(0),"");
         }
 
         if(str.contains(LS)){
@@ -529,8 +528,14 @@ public class MacroProcessor {
         } else {
             checkIsStrValidAsseblerStr(str);
         }
+        
+        str = str.trim();
 
-        text.append(str);
+        if(!str.isEmpty()){
+            text.append(str+LS);
+        }
+        
         _guiConfig.outTextField.setText(text.toString());
+
     }
 }

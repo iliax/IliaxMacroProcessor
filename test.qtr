@@ -1,11 +1,13 @@
-MACRO m1 []
+MACRO m1 [x]
+ .metka: add r1 x
 
- IF [ 1 == 1 ]
-  add1 r1 r2
-  qwe ==12
+ IF [ x == 0 ]
+  DEC x
+  ololo
+  GOTO metka
  ENDIF
 
 MEND
 
-m1 []
+m1 [0]
 
