@@ -1,7 +1,5 @@
-
 package iliaxmacroprocessor.logic;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -68,6 +66,9 @@ public class ParsingUtils {
     }
 
     public static boolean isValidMacroLabelName(String lbl){
+        if(!lbl.startsWith(".")){
+            return false;
+        }
         if( Pattern.compile("^.[A-Z_a-z]+([A-Za-z0-9_]){0,15}:$").matcher(lbl).matches() ){
             return true;
         } 
@@ -203,27 +204,28 @@ public class ParsingUtils {
 
         String err = "\n'"+str+"' - invalid ASSEBLER instruction";
 
-        return;
-
-        /*List<String> lexems = getLexems(str);
+        List<String> lexems = getLexems(str);
         
         if(str.contains("[") || str.contains("]") || lexems.size() > 4){
             throw new RuntimeException(err);
         }
 
         if(lexems.size() == 1){
-            if(isValidCommandName(lexems.get(0))){
+            if(isValidCommandName(lexems.get(0)) || isValidAssLabelName(lexems.get(0))){
                 return;
             }
         }
 
-        if(lexems.size() == 1){
-            if(isValidMacroLabelName(lexems.get(0))){
-                return;
-            }
-        }
 
-        if(isValidMacroLabelName(lexems.get(0))){
+        if(isValidAssLabelName(lexems.get(0))){
+            if(lexems.size() == 2){
+                if(!isValidCommandName(lexems.get(1))){
+                    throw new RuntimeException(err);
+                } else {
+                    return;
+                }
+            }
+
             if(isValidCommandName(lexems.get(1)) &&
                     (isNumber(lexems.get(2)) || isValidVariableName(lexems.get(2)) )){
                 if(lexems.size() == 3){
@@ -238,6 +240,7 @@ public class ParsingUtils {
 
             if(isValidCommandName(lexems.get(0)) &&
                     (isNumber(lexems.get(1)) || isValidVariableName(lexems.get(1)) )){
+                
                 if(lexems.size() == 2){
                     return;
                 } else if(lexems.size() == 3) { // size == 3
@@ -248,7 +251,7 @@ public class ParsingUtils {
             }
         }
 
-       throw new RuntimeException(err);*/
+       throw new RuntimeException(err);
     }
 
     public static boolean isNumber(String str){

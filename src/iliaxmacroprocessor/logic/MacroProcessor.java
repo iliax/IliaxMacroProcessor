@@ -1,8 +1,12 @@
 package iliaxmacroprocessor.logic;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.Lists;
+import com.google.common.base.Splitter;
 import iliaxmacroprocessor.gui.GuiConfig;
 import com.google.common.base.Joiner;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +144,7 @@ public class MacroProcessor {
 
                 tryLock();
 
-                addLabel(macroString, i);
+                addLabel(macroString);
 
                 newMacros.getStrings().add(macroString);
 
@@ -166,12 +170,13 @@ public class MacroProcessor {
         return i;
     }
 
-    private void addLabel(String str, int shift){
+    private void addLabel(String str){
         List<String> lexems = getLexems(str);
 
         Macros currMacros = currentMacrosesStack.getLast();
 
         if(isValidMacroLabelName(lexems.get(0))){
+            int shift = currMacros.getStrings().size()+1;
             if( ! currMacros.addLabel(lexems.get(0).substring(1, lexems.get(0).indexOf(":")), shift))
             {
                 throw new RuntimeException("label "
@@ -261,25 +266,9 @@ public class MacroProcessor {
     private void processMacrosInjection(StringBuffer text, Macros macros, String begining){
         /////////////////////////////////
 
-        // LABELS processing
-            for(int i=0; i < macros.getStrings().size(); i++){
-                String macroStr = macros.getStrings().get(i);
 
-                List<String> lexems = getLexems(macroStr);
-                List<String> toApp = new ArrayList<String>(lexems);
-                
-                if(isValidAssLabelName(lexems.get(0))){
-                    if(lexems.get(0).indexOf(":") != -1){
-                        String newLbl =
-                                lexems.get(0).substring(0, lexems.get(0).indexOf(":"))+"_:";
-                        toApp.set(0, newLbl);
-                    }
-                }
 
-                macros.getStrings().set(i, Joiner.on(" ").join(toApp));
-            }
-        
-        //////////////////////////////
+//        //////////////////////////////
         
         LOG.info("process macros injection: " + macros.getName());
         tryLock();
@@ -491,7 +480,6 @@ public class MacroProcessor {
                 try {
                     MacroProcessor.class.wait();
                 } catch (InterruptedException ex) {
-                    
                 }
              }
          }
@@ -518,10 +506,54 @@ public class MacroProcessor {
             return;
         }
 
+        //// deleting macro labels
         List<String> lexems = getLexems(str);
         if(isValidMacroLabelName(lexems.get(0))){
             str = str.replaceAll(lexems.get(0),"");
         }
+        //
+
+        //// adding _ to repeated labels
+        if(isValidAssLabelName(lexems.get(0))){
+            
+            List<String> textLexems =
+                    Lists.newArrayList(Splitter.on("\n")
+                    .on(" ").trimResults().omitEmptyStrings().split(text.toString()));
+            
+            
+            for(String  lex : Lists.reverse(textLexems)){
+                if(lex.startsWith(lexems.get(0).substring(0, lexems.get(0).indexOf(":")))){
+                    if(lex.contains(":")){
+                        String repl = lex.substring(0, lex.indexOf(":")) + "_:";
+                        str = str.replace(lexems.get(0), repl);
+
+                            // LABELS processing in macros strings
+                            Macros macros = currentMacrosesStack.getLast();
+                            for(int i=0; i < macros.getStrings().size(); i++){
+                                String macroStr = macros.getStrings().get(i);
+
+                                List<String> mlexems = getLexems(macroStr);
+                                List<String> toApp = new ArrayList<String>(mlexems);
+
+                                for(int j=1; j < mlexems.size(); j++){
+                                    if(isValidVariableName(mlexems.get(j))){
+                                        if(lex.startsWith(mlexems.get(j))){
+                                            String newLbl =
+                                                    mlexems.get(j)+"_";
+                                            toApp.set(j, newLbl);
+                                        }
+                                    }
+                                }
+                                macros.getStrings().set(i, Joiner.on(" ").join(toApp));
+                            }
+                            //
+
+                        break;
+                    }
+                }
+            }
+        }
+        //
 
         if(str.contains(LS)){
             checkIsStrValidAsseblerStr(str.substring(0, str.indexOf(LS)));
@@ -532,7 +564,7 @@ public class MacroProcessor {
         str = str.trim();
 
         if(!str.isEmpty()){
-            text.append(str+LS);
+            text.append(" " + str + LS);
         }
         
         _guiConfig.outTextField.setText(text.toString());

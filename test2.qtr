@@ -1,33 +1,28 @@
 MACRO M [ x ]
-  aadd qw 12
-
-  before while
 
   SET size 5  
 
   WHILE [ x > size ]
     DEC x
-    print => x
+    print [ x ]
 
     IF [ x == size ]
-	'x' == size - break
+	ololo
     ENDIF
 
   ENDW
 
-  MACRO mac []
-    ololo
+  MACRO print [ arg ]
+    prints arg
   MEND
 
-  after while
-  GOTO E1
-  // skip this..
-  E1: ending
+  GOTO Metka
+  
+// skip this invalid code..
 
+  .Metka: end
+ 
 MEND
-
-
-M [ 10 ]
 
 MACRO m []
  L1: qwe
@@ -35,3 +30,5 @@ MACRO m []
 MEND
 
 
+
+M [ 10 ]
