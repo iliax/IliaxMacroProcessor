@@ -61,7 +61,7 @@ public class MacroProcessor {
         LOG.info("   FIRST SCAN");
         LOG.info("==================================");
 
-        LOG.info("1st scan begun");
+        LOG.info("первый проход начался");
 
         currentMacrosesStack.add(Macros.ROOT_MACROS);
 
@@ -72,7 +72,7 @@ public class MacroProcessor {
 
         while (i < stringsSize){
 
-            LOG.info("checking strings: " +  _strings.get(i));
+            LOG.info("анализ строки: " +  _strings.get(i));
             int check = checkMacroGenHeader(_strings.get(i));
 
             tryLock();
@@ -80,14 +80,14 @@ public class MacroProcessor {
             if(check != -1){
                 i = processMacroDefinition(i, check);
             } else {
-                LOG.info("passing string...");
+                LOG.info("пропускаем строку: "+_strings.get(i));
                 i++;
             }
 
             tryLock();
         }
         
-        LOG.info("1st scan finished");
+        LOG.info("первый проход закончился");
 
         _guiConfig.secScanButt.setVisible(true);
 
@@ -121,11 +121,11 @@ public class MacroProcessor {
         Macros newMacros = parseMacrosHeader(_strings.get(stringNum), macroWordNum);
 
         if(newMacros == null){
-            throw new RuntimeException("invalid macros name! str " + stringNum);
+            throw new RuntimeException("невалидное имя макроса. str " + stringNum);
         }
         
         newMacros.setName(contextPrefix + newMacros.getName());
-        LOG.info("start of "+newMacros.getName()+" macros definition");
+        LOG.info("начало определения макроса "+newMacros.getName());
 
         tryLock();
 
@@ -140,7 +140,7 @@ public class MacroProcessor {
             int checkHeader = checkMacroGenHeader(macroString);
 
             if(checkHeader == -1){  // не обьявление нового макроса
-                LOG.info("adding new string: "+macroString);
+                LOG.info("добавляем строку: "+macroString);
 
                 tryLock();
 
@@ -150,18 +150,18 @@ public class MacroProcessor {
 
                 i++;
             } else {
-                LOG.info("starting nested macros definition");
+                LOG.info("начало обработки вложенного макроса");
                 
                 i = processMacroDefinition(i, checkHeader) + 1;
             }
         }
 
         if(_macroses.contains(newMacros)){
-            throw new RuntimeException("this macros already defined");
+            throw new RuntimeException("этот макрос уже определен");
         }
         
         _macroses.add(newMacros);  
-        LOG.info("new macros added: " + newMacros.getName());
+        LOG.info("добавлен новый макрос: " + newMacros.getName());
         updateMAcrosesList();
         tryLock();
 
@@ -169,6 +169,7 @@ public class MacroProcessor {
 
         return i;
     }
+
 
     private void addLabel(String str){
         List<String> lexems = getLexems(str);
@@ -179,17 +180,17 @@ public class MacroProcessor {
             int shift = currMacros.getStrings().size()+1;
             if( ! currMacros.addLabel(lexems.get(0).substring(1, lexems.get(0).indexOf(":")), shift))
             {
-                throw new RuntimeException("label "
-                        + lexems.get(0) +" already defined");
+                throw new RuntimeException("метка "
+                        + lexems.get(0) +" уже существует");
             } else {
-                LOG.info("label "+lexems.get(0)+" added");
+                LOG.info("метка "+lexems.get(0)+" добавлена");
                 tryLock();
             }
         }
     }
 
     public void start2ndScan(){
-        LOG.info("2nd scan started");
+        LOG.info("начало 2го прохода");
         
         text = new StringBuffer();
 
@@ -197,7 +198,7 @@ public class MacroProcessor {
         while(i < _strings.size()){
             String s = _strings.get(i);
 
-            LOG.info("processing string: "+s);
+            LOG.info("анализ строки: "+s);
             
             tryLock();
 
@@ -221,12 +222,12 @@ public class MacroProcessor {
 
         _guiConfig.outTextField.setText(text.toString());
 
-        LOG.info("2nd scan finished");
+        LOG.info("2й проход закончился");
         LOG.info("\n\n OUT:\n\n" + text.toString());
     }
 
     private int passMacroDefinition(int begin){
-        LOG.info("passing macro definition");
+        LOG.info("пропуск макроопределения...");
 
         //tryLock();
 
@@ -270,7 +271,7 @@ public class MacroProcessor {
 
 //        //////////////////////////////
         
-        LOG.info("process macros injection: " + macros.getName());
+        LOG.info("начало макроподстановки: " + macros.getName());
         tryLock();
 
         currentMacrosesStack.add(macros);
@@ -280,7 +281,7 @@ public class MacroProcessor {
         for(int i=0; i < macros.getStrings().size(); i++){
 
             String s = macros.getStrings().get(i);
-            LOG.info("processing string: " + s);
+            LOG.info("обработка строки: " + s);
 
             try {
                 int check = processCommand(macros, i);
@@ -322,7 +323,7 @@ public class MacroProcessor {
             throw new NoCommandException();
         }
 
-        LOG.info("processing WHILE command");
+        LOG.info("обработка команды WHILE");
         tryLock();
 
         whileHeader = MacroProcessor.replaceVarsByTheirValues(whileHeader, currMacros);
@@ -331,7 +332,7 @@ public class MacroProcessor {
         if(ch == false){
             for(int i = currentStr + 1, j = 0; i < currMacros.getStrings().size(); i++, j++){
                 if(currMacros.getStrings().get(i).contains(END_WHILE)){
-                    LOG.info("passing WHILE block - inequality in [ ] wrong");
+                    LOG.info("пропуcк блока WHILE - выражение в скобках неверно");
                     tryLock();
                     return j+1;
                 }
@@ -343,7 +344,7 @@ public class MacroProcessor {
                 String s = currMacros.getStrings().get(i);
 
                 if(s.contains(END_WHILE)){
-                    LOG.info("WHILE processing finished");
+                    LOG.info("конец итерации WHILE");
                     tryLock();
                     
                     return -1; //чтобы остаться там же 
@@ -382,7 +383,7 @@ public class MacroProcessor {
     private void processMacroCall(String s, StringBuffer text){
         Macros m = checkMacroCall(s);
         if(m == null){
-            LOG.info("appeding string: " + s);
+            LOG.info("пишем строку: " + s);
             appendText(s + LS);
             tryLock();
         } else {

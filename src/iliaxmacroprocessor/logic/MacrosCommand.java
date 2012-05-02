@@ -32,7 +32,7 @@ public class MacrosCommand {
 
         if(variableVAlFromGlobalContext != null){
             try {
-                LOG.info("INC/DEC : changing '"+varName+"' variable ("+ sh+")");
+                LOG.info("INC/DEC : устанавливаем  переменную'"+varName+"' ("+ sh+")");
                 tryLock();
                 
                 int num = Integer.parseInt(variableVAlFromGlobalContext);
@@ -41,10 +41,10 @@ public class MacrosCommand {
                 _setVariableValue(varName, num+"", context);
 
             } catch (NumberFormatException nfe){
-                throw new RuntimeException("this variable is NOT INT");
+                throw new RuntimeException("эта переменная не INT");
             }
         } else {
-            throw new RuntimeException("no variable with this name");
+            throw new RuntimeException("нет переменной с таким именем: "+varName);
         }   
     }
 
@@ -55,7 +55,7 @@ public class MacrosCommand {
             return;
         }
 
-        LOG.info("SET command: value '" + val + "' to variable " + varName);
+        LOG.info("SET: устанавливаем значение '" + val + "' переменной " + varName);
         tryLock();
 
         if(context.getVariables().getVariableVAlFromGlobalContext(varName) != null){
@@ -135,12 +135,12 @@ public class MacrosCommand {
     private static int processGOTOCommand(Macros context, String lbl, int currentMacrosLine) {
 
         if(context.isLabelExist(lbl)){
-            LOG.info("GOTO command processing to label '" + lbl+"'");
+            LOG.info("обработка команды GOTO на метку '" + lbl+"'");
             tryLock();
             return context.getLabels().get(lbl) - currentMacrosLine - 2;
         }
 
-        throw new RuntimeException("no label with this name: "+lbl);
+        throw new RuntimeException("нет такой метки!: "+lbl);
     }
 
     public static class NoCommandException extends Exception {}

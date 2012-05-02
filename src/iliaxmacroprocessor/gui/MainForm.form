@@ -74,18 +74,16 @@
                       <Component id="_start1stScanButt" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="_nextStepButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="_endButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+              <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane3" alignment="1" pref="277" max="32767" attributes="0"/>
+                          <Component id="jScrollPane3" alignment="1" pref="274" max="32767" attributes="0"/>
                           <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane4" pref="277" max="32767" attributes="0"/>
+                          <Component id="jScrollPane4" pref="274" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -94,12 +92,15 @@
                       </Group>
                   </Group>
                   <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane5" alignment="1" pref="608" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                      <Component id="_endButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="_start2ndScanButt" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="435" max="32767" attributes="0"/>
+                      <EmptySpace pref="259" max="32767" attributes="0"/>
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane5" alignment="1" pref="611" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -115,7 +116,7 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="1" pref="614" max="32767" attributes="1"/>
+                  <Component id="jScrollPane1" alignment="1" pref="738" max="32767" attributes="1"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Component id="jScrollPane2" alignment="0" max="32767" attributes="1"/>
@@ -132,16 +133,16 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane5" pref="112" max="32767" attributes="0"/>
+                      <Component id="jScrollPane5" pref="236" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="_start1stScanButt" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="_nextStepButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="_endButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="_start2ndScanButt" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="_endButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -199,7 +200,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="_start1stScanButt">
       <Properties>
-        <Property name="text" type="java.lang.String" value="start 1st scan"/>
+        <Property name="text" type="java.lang.String" value="&#x43d;&#x430;&#x447;&#x430;&#x442;&#x44c; &#x43f;&#x435;&#x440;&#x432;&#x44b;&#x439; &#x43f;&#x440;&#x43e;&#x445;&#x43e;&#x434;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_start1stScanButtActionPerformed"/>
@@ -207,7 +208,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="_nextStepButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Next Step"/>
+        <Property name="text" type="java.lang.String" value="&#x421;&#x43b;&#x435;&#x434;&#x443;&#x44e;&#x449;&#x438;&#x439; &#x448;&#x430;&#x433;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_nextStepButtonActionPerformed"/>
@@ -247,6 +248,7 @@
         <Component class="javax.swing.JTextArea" name="_macrosStrings">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="editable" type="boolean" value="false"/>
             <Property name="rows" type="int" value="5"/>
           </Properties>
         </Component>
@@ -265,6 +267,9 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
         <Component class="javax.swing.JTextPane" name="_logField">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>
@@ -275,7 +280,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="_endButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="END"/>
+        <Property name="text" type="java.lang.String" value="&#x414;&#x43e; &#x43a;&#x43e;&#x43d;&#x446;&#x430; &#x43f;&#x440;&#x43e;&#x445;&#x43e;&#x434;&#x430;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_endButtonActionPerformed"/>

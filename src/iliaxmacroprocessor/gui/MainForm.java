@@ -54,7 +54,7 @@ public class MainForm extends javax.swing.JFrame {
             @Override
             public void append(LoggingEvent aLogEvent) {
                 _logField.setText(_logField.getText() + aLogEvent.getMessage() + LS);
-                _logField.setCaretPosition(_logField.getText().length()-1);
+                _logField.setCaretPosition(_logField.getText().length());
             }
         });
 
@@ -123,21 +123,21 @@ public class MainForm extends javax.swing.JFrame {
         jScrollPane1.setViewportView(_sourseTextField);
 
         _outTextField.setEditable(false);
-        _outTextField.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        _outTextField.setFont(new java.awt.Font("Monospaced", 0, 12));
         jScrollPane2.setViewportView(_outTextField);
 
         jLabel1.setText("IN:");
 
         jLabel2.setText("OUT:");
 
-        _start1stScanButt.setText("start 1st scan");
+        _start1stScanButt.setText("начать первый проход");
         _start1stScanButt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _start1stScanButtActionPerformed(evt);
             }
         });
 
-        _nextStepButton.setText("Next Step");
+        _nextStepButton.setText("Следующий шаг");
         _nextStepButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _nextStepButtonActionPerformed(evt);
@@ -154,16 +154,18 @@ public class MainForm extends javax.swing.JFrame {
         jLabel3.setText("Macroses:");
 
         _macrosStrings.setColumns(20);
+        _macrosStrings.setEditable(false);
         _macrosStrings.setRows(5);
         jScrollPane4.setViewportView(_macrosStrings);
 
         jLabel4.setText("Macros data:");
 
+        _logField.setEditable(false);
         jScrollPane5.setViewportView(_logField);
 
         jLabel5.setText("LOG:");
 
-        _endButton.setText("END");
+        _endButton.setText("До конца прохода");
         _endButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _endButtonActionPerformed(evt);
@@ -217,27 +219,28 @@ public class MainForm extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(_start1stScanButt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(_nextStepButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(_endButton)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(_nextStepButton)))
+                .addGap(9, 9, 9)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
                             .addComponent(jLabel4)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jLabel5)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(_endButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(_start2ndScanButt)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 435, Short.MAX_VALUE)
-                        .addComponent(jButton1))
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 259, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -249,7 +252,7 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,14 +267,14 @@ public class MainForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(_start1stScanButt)
                     .addComponent(_nextStepButton)
-                    .addComponent(_endButton)
                     .addComponent(jButton1)
-                    .addComponent(_start2ndScanButt))
+                    .addComponent(_start2ndScanButt)
+                    .addComponent(_endButton))
                 .addContainerGap())
         );
 

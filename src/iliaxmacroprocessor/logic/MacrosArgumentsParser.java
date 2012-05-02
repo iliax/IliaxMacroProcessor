@@ -18,11 +18,11 @@ public class MacrosArgumentsParser {
     /** парсит параметры при макроопределении */
     public void parseVariablesArea(String str, Macros currentMacros) {
         if((!str.contains("[") || (!str.contains("]")))){
-            throw new RuntimeException("this is not valid variables area!");
+            throw new RuntimeException("это не валидная область аргументов!");
         }
 
         String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
-        LOG.info("parsing arguments: '"+argsArea+"'");
+        LOG.info("анализ аргументов: '"+argsArea+"'");
 
         List<String> lexems = ParsingUtils.getLexems(argsArea);
 
@@ -31,7 +31,7 @@ public class MacrosArgumentsParser {
             if(!arg.contains("=")){
                 //ключeвой
                 if(!isValidVariableName(arg)){
-                    throw new RuntimeException("invalid arg format");
+                    throw new RuntimeException("неправильный формат аргумета: "+arg);
                 }
                 currentMacros.getVariables().addVariable(arg, true);
             } else {
@@ -39,7 +39,7 @@ public class MacrosArgumentsParser {
                 String varName = arg.substring(0, arg.indexOf("="));
 
                 if(!isValidVariableName(varName)){
-                    throw new RuntimeException("invalid arg format");
+                    throw new RuntimeException("неправильный формат аргумета: "+varName);
                 }
                 String varVal = arg.substring(arg.indexOf("=")+1);
 
@@ -53,7 +53,7 @@ public class MacrosArgumentsParser {
 
     public void setMacrosVars(String str, Macros m){
         if((!str.contains("[") || (!str.contains("]")))){
-            throw new RuntimeException("this is not valid variables area!");
+            throw new RuntimeException("это не валидная область аргументов!");
         }
 
         String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
@@ -89,14 +89,14 @@ public class MacrosArgumentsParser {
                 if(vs.isVariableExists(varName) && vs.isVariableKeyVar(varName)){
                     vs.setVariableValue(varName, varVal);
                 } else {
-                    throw new RuntimeException("unknown contruction. Str: '"+str+"'");
+                    throw new RuntimeException("неопознанная конструкция. Str: '"+str+"'");
                 }
             }
             
         }
 
         if(varCount < vs.varSeqCount()){
-            throw new RuntimeException("few arguments in this macros call!");
+            throw new RuntimeException("мало аргументов в вызове макроса");
         }
 
 
