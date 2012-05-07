@@ -2,18 +2,20 @@ MACRO M [ x ]
 
   SET size 5  
 
-  WHILE [ x > size ]
+  print [ $size ]
+
+  WHILE [ $x == size ]
     DEC x
     print [ x ]
 
-    IF [ x == size ]
+    IF [ $x == size ]
 	ololo
     ENDIF
 
   ENDW
 
   MACRO print [ arg ]
-    prints arg
+    prints $arg
   MEND
 
   GOTO Metka

@@ -24,6 +24,9 @@ public class MacroProcessor {
     // позволять рекурсивный вызов макроса
     public static boolean enableRecursionMacrossCall = true;
 
+    // пользовать $ перед переменными
+    public static boolean enableUsingBuksBeforeVar = true;
+
     private static final Logger LOG = Logger.getLogger(MacroProcessor.class.getName());
 
     public List<String> _strings;
@@ -140,7 +143,7 @@ public class MacroProcessor {
             int checkHeader = checkMacroGenHeader(macroString);
 
             if(checkHeader == -1){  // не обьявление нового макроса
-                LOG.info("добавляем строку: "+macroString);
+                LOG.info("добавляем строку в макрос: "+macroString);
 
                 tryLock();
 
@@ -408,7 +411,16 @@ public class MacroProcessor {
         List<String> toAppend = new ArrayList<String>();
 
         for(String lex : lexems){
-            String varVal = currMacros.getVariables().getVariableVAlFromGlobalContext(lex);
+            String varVal = null;
+
+            if(enableUsingBuksBeforeVar){
+                if(lex.startsWith("$")){
+                    varVal = currMacros.getVariables().getVariableVAlFromGlobalContext(lex.substring(1));
+                }
+            } else {
+                varVal = currMacros.getVariables().getVariableVAlFromGlobalContext(lex);
+            }
+            
             if(varVal != null){
                 toAppend.add(varVal);
             } else {

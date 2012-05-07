@@ -11,7 +11,13 @@ MACRO m1 [x]
 
 MEND
 
-m1 [5]
-end
 
+MACRO m2 [x]
+
+add $x
+
+MEND
+
+
+m2 [123]
 
