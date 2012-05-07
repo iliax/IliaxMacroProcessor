@@ -194,7 +194,7 @@ public class ParsingUtils {
 
     private static Pair getNumberPairByLexems(List<String> lexems){
         try {
-            return new Pair(Integer.parseInt(lexems.get(0)), Integer.parseInt(lexems.get(1)));
+            return new Pair(Integer.parseInt(lexems.get(0).trim()), Integer.parseInt(lexems.get(1).trim()));
         } catch(NumberFormatException nfe){
             return null;
         }

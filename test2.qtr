@@ -4,9 +4,9 @@ MACRO M [ x ]
 
   print [ $size ]
 
-  WHILE [ $x == size ]
+  WHILE [ $x > $size ]
     DEC x
-    print [ x ]
+    print [ $x ]
 
     IF [ $x == size ]
 	ololo

@@ -10,6 +10,9 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class ConsoleAppenderImpl extends ConsoleAppender {
 
+
+    public static volatile boolean showInConsole = true;
+
     /** слушатели сообщений логгера */
     private static volatile List<LogEventAppendable> _listeners =
             new CopyOnWriteArrayList<LogEventAppendable>();
@@ -20,8 +23,11 @@ public class ConsoleAppenderImpl extends ConsoleAppender {
     @Override
     public void doAppend(LoggingEvent aLogEvent) {
         synchronized(ConsoleAppenderImpl.class){
+
+            if(showInConsole){
+                super.doAppend(aLogEvent);
+            }
             
-            super.doAppend(aLogEvent);
             if (!_listeners.isEmpty()) {
                 for (LogEventAppendable appendable : _listeners) {
                     appendable.append(aLogEvent);
