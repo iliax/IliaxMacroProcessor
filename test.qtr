@@ -1,8 +1,17 @@
 m1 MACRO x,y,z=100
-	
+
+.WHILE [$x > 0]
+
+ L1: add qq L1
+ .DEC x
+
+.ENDW
+
 MEND
 
 m1 12,12
+
+
 
 
 

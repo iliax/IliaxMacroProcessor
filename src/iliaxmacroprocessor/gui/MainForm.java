@@ -350,6 +350,7 @@ public class MainForm extends javax.swing.JFrame {
         for(String s  : _textDataHolder.getAssCommndsNames()){
             tko[i++] = s;
         }
+        
         jList1.setListData(tko);
     }//GEN-LAST:event__openMenuItemActionPerformed
 

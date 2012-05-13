@@ -14,14 +14,19 @@ public class ConsoleAppenderImpl extends ConsoleAppender {
     private static volatile List<LogEventAppendable> _listeners =
             new CopyOnWriteArrayList<LogEventAppendable>();
 
+    public static boolean APPEND_TO_CONSOLE = true;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void doAppend(LoggingEvent aLogEvent) {
         synchronized(ConsoleAppenderImpl.class){
+
+            if(APPEND_TO_CONSOLE){
+                super.doAppend(aLogEvent);
+            }
             
-            super.doAppend(aLogEvent);
             if (!_listeners.isEmpty()) {
                 for (LogEventAppendable appendable : _listeners) {
                     appendable.append(aLogEvent);

@@ -28,6 +28,7 @@ public class MacroProcessor {
     public static boolean enableUsingBuksBeforeVar = true;
 
     private static final Logger LOG = Logger.getLogger(MacroProcessor.class.getName());
+    public static boolean CONSOLE_MODE = false;
 
     public List<String> _strings;
     
@@ -57,7 +58,7 @@ public class MacroProcessor {
             mNames[i] = _macroses.get(i).getName();
         }
 
-        _guiConfig.macrosesList.setListData(mNames);
+            _guiConfig.macrosesList.setListData(mNames);
     }
 
     public void start1stScan(){
@@ -342,7 +343,6 @@ public class MacroProcessor {
             }
         } else {
 
-            
             //////////////////////////////////
             for(; i < currMacros.getStrings().size() ; i++){
                 String s = currMacros.getStrings().get(i);
@@ -497,6 +497,10 @@ public class MacroProcessor {
     }
 
      static void tryLock(){
+         if(CONSOLE_MODE == true){
+            return;
+         }
+
          if(atomicBoolean.get() == false){
             synchronized(MacroProcessor.class){
                 try {
@@ -531,7 +535,7 @@ public class MacroProcessor {
         try{
             _appendText(str);
         } catch(IndexOutOfBoundsException e){
-            throw new NotRealIndexOutOfBoundException();
+            throw new NotRealIOOfBException();
         }
     }
 
