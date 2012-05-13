@@ -329,18 +329,22 @@ public class MacroProcessor {
         whileHeader = MacroProcessor.replaceVarsByTheirValues(whileHeader, currMacros);
 
         boolean ch = checkInequality(whileHeader.substring(whileHeader.indexOf("[")+1, whileHeader.indexOf("]")));
+
+        int i = currentStr +1;
+
         if(ch == false){
-            for(int i = currentStr + 1, j = 0; i < currMacros.getStrings().size(); i++, j++){
-                if(currMacros.getStrings().get(i).contains(END_WHILE)){
+            for(int i1 = currentStr + 1, j = 0; i1 < currMacros.getStrings().size(); i1++, j++){
+                if(currMacros.getStrings().get(i1).contains(END_WHILE)){
                     LOG.info("пропуcк блока WHILE - выражение в скобках неверно");
                     tryLock();
                     return j+1;
                 }
             }
         } else {
+
             
             //////////////////////////////////
-            for(int i = currentStr + 1; i < currMacros.getStrings().size(); i++){
+            for(; i < currMacros.getStrings().size() ; i++){
                 String s = currMacros.getStrings().get(i);
 
                 if(s.contains(END_WHILE)){
@@ -374,10 +378,14 @@ public class MacroProcessor {
 
             }
 
+
+
             //////////////////////////////////
         }
-        
-        throw new NoCommandException();
+
+
+        return i - currentStr ;
+        //throw new NoCommandException();  //TODO
     }
 
     private void processMacroCall(String s, StringBuffer text){
@@ -519,8 +527,15 @@ public class MacroProcessor {
         LOG.debug(mess);
     }
 
+    public void appendText(String str){
+        try{
+            _appendText(str);
+        } catch(IndexOutOfBoundsException e){
+            throw new NotRealIndexOutOfBoundException();
+        }
+    }
 
-    public synchronized  void appendText(String str){
+    public synchronized  void _appendText(String str){
         if(text == null || str.trim().isEmpty()){
             return;
         }
