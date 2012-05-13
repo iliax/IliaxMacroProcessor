@@ -200,7 +200,7 @@ public class ParsingUtils {
         }
     }
 
-    public static void checkIsStrValidAsseblerStr(String str) throws RuntimeException {
+    public static void checkIsStrValidAsseblerStr(String str, List<String> commands) throws RuntimeException {
 
         String err = "\n'"+str+"' - invalid ASSEBLER instruction";
 
@@ -211,22 +211,29 @@ public class ParsingUtils {
         }
 
         if(lexems.size() == 1){
-            if(isValidCommandName(lexems.get(0)) || isValidAssLabelName(lexems.get(0))){
+            if(isValidAssLabelName(lexems.get(0))){
                 return;
+            }
+
+            if(commands.contains(lexems.get(0))){
+                return;
+            }
+
+            if(!commands.contains(lexems.get(0))){
+                throw new RuntimeException(err);
             }
         }
 
-
         if(isValidAssLabelName(lexems.get(0))){
             if(lexems.size() == 2){
-                if(!isValidCommandName(lexems.get(1))){
+                if(!commands.contains(lexems.get(0))){
                     throw new RuntimeException(err);
                 } else {
                     return;
                 }
             }
 
-            if(isValidCommandName(lexems.get(1)) &&
+            if(isValidCommandName(lexems.get(1)) && commands.contains(lexems.get(1)) &&
                     (isNumber(lexems.get(2)) || isValidVariableName(lexems.get(2)) )){
                 if(lexems.size() == 3){
                     return;
@@ -238,7 +245,7 @@ public class ParsingUtils {
             }
         } else {
 
-            if(isValidCommandName(lexems.get(0)) &&
+            if(isValidCommandName(lexems.get(0)) &&  commands.contains(lexems.get(0)) &&
                     (isNumber(lexems.get(1)) || isValidVariableName(lexems.get(1)) )){
                 
                 if(lexems.size() == 2){

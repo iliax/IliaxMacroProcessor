@@ -10,19 +10,19 @@ import  static iliaxmacroprocessor.logic.MacroProcessor.*;
  */
 public class MacrosCommand {
 
-    public static final String SET = "SET";
+    public static final String SET = ".SET";
 
-    public static final String DEC = "DEC";
+    public static final String DEC = ".DEC";
 
-    public static final String INC = "INC";
+    public static final String INC = ".INC";
 
-    public static final String IF = "IF";
-    public static final String END_IF = "ENDIF";
+    public static final String IF = ".IF";
+    public static final String END_IF = ".ENDIF";
 
-    public static final String WHILE = "WHILE";
-    public static final String END_WHILE = "ENDW";
+    public static final String WHILE = ".WHILE";
+    public static final String END_WHILE = ".ENDW";
 
-    public static final String GOTO = "GOTO";
+    public static final String GOTO = ".GOTO";
 
     private static final Logger LOG = Logger.getLogger(MacrosCommand.class.getName());
 

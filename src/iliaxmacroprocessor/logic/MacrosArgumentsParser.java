@@ -52,17 +52,22 @@ public class MacrosArgumentsParser {
        
 
     public void setMacrosVars(String str, Macros m){
-        if((!str.contains("[") || (!str.contains("]")))){
+        /*if((!str.contains("[") || (!str.contains("]")))){
             throw new RuntimeException("это не валидная область аргументов!");
-        }
+        }*/
 
-        String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
-        List<String> lexems = ParsingUtils.getLexems(argsArea);
+        str = str.replace(m.getName().substring(1), "");        
+
+        String argsArea = str.replace("[", "").replace("]", "").trim();
+        List<String> lexems = ParsingUtils.getLexems(argsArea.trim());
         
         Macros.VariablesStore vs  = m.getVariables();
         int varCount = 0;
         
         boolean positionVarsEnded = false;
+        /*if(m.getVariables().getVarsSequence().isEmpty()){
+            positionVarsEnded = true;
+        }*/
         for(String arg : lexems){
 
             if(!arg.contains("=")){

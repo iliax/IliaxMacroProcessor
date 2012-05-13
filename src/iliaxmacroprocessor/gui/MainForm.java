@@ -8,9 +8,11 @@ package iliaxmacroprocessor.gui;
 import iliaxmacroprocessor.logging.ConsoleAppenderImpl;
 import iliaxmacroprocessor.logic.MacroProcessor;
 import iliaxmacroprocessor.logic.Macros;
+import iliaxmacroprocessor.logic.ParsingUtils;
 import iliaxmacroprocessor.logic.TextDataHolder;
 import java.awt.FileDialog;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFileChooser;
@@ -93,6 +95,11 @@ public class MainForm extends javax.swing.JFrame {
         _endButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         _start2ndScanButt = new javax.swing.JLabel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
+        jLabel6 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         _openMenuItem = new javax.swing.JMenuItem();
@@ -181,6 +188,29 @@ public class MainForm extends javax.swing.JFrame {
 
         _start2ndScanButt.setText("SECOND SCAN");
 
+        jList1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jList1MouseClicked(evt);
+            }
+        });
+        jScrollPane6.setViewportView(jList1);
+
+        jLabel6.setText("TKO");
+
+        jButton2.setText("+");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("-");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         jMenu1.setText("File");
 
         _openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
@@ -224,10 +254,24 @@ public class MainForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-                            .addComponent(jLabel4)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE))
+                                    .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                                        .addGap(6, 6, 6))))
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
@@ -257,17 +301,24 @@ public class MainForm extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel3)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel6))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane6)
+                                    .addComponent(jScrollPane3))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel4)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(_start1stScanButt)
@@ -296,6 +347,13 @@ public class MainForm extends javax.swing.JFrame {
         _textDataHolder = new TextDataHolder(file);
 
         _sourseTextField.setText(_textDataHolder.getText());
+
+        String [] tko = new String[_textDataHolder.getAssCommndsNames().size()+1];
+        int i=0;
+        for(String s  : _textDataHolder.getAssCommndsNames()){
+            tko[i++] = s;
+        }
+        jList1.setListData(tko);
     }//GEN-LAST:event__openMenuItemActionPerformed
 
     private void _saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__saveMenuItemActionPerformed
@@ -329,15 +387,15 @@ public class MainForm extends javax.swing.JFrame {
             } catch(Exception e){}
         }
 
-        _textDataHolder.synchTextWithFile(_textDataHolder.file, _sourseTextField.getText());
-
+        syncData();
+        
         _logField.setText("");
         atomicBoolean.set(false);
 
         _outTextField.setText("");
         _macrosStrings.setText("");
 
-        macroProcessor = new MacroProcessor(_guiConfig, _textDataHolder.getStrings(TextDataHolder.NO_EMPTY_STRINGS), atomicBoolean);
+        macroProcessor = new MacroProcessor(_guiConfig, _textDataHolder.getStrings(TextDataHolder.NO_EMPTY_STRINGS), atomicBoolean, _textDataHolder);
         //macroProcessor.start1stScan();
         
         _workingThread = new Thread(){
@@ -411,6 +469,48 @@ public class MainForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event__macrosesListValueChanged
 
+
+    void syncData(){
+        _textDataHolder.synchTextWithFile(_textDataHolder.file, _sourseTextField.getText());
+
+        
+
+        String [] tko = new String[_textDataHolder.getAssCommndsNames().size()+1];
+        int i=0;
+        for(String s  : _textDataHolder.getAssCommndsNames()){
+            tko[i++] = s;
+        }
+        jList1.setListData(tko);
+    }
+
+    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
+
+    }//GEN-LAST:event_jList1MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+          String showInputDialog = JOptionPane.showInputDialog(this, "Введите имя новой операции");
+
+        if(showInputDialog != null && !showInputDialog.trim().isEmpty()
+            && !_textDataHolder.getAssCommndsNames().contains(showInputDialog)){
+
+            
+            if(!ParsingUtils.isValidCommandName(showInputDialog)){
+                JOptionPane.showMessageDialog(this, "невалидное имя операции");
+                return;
+            }
+
+            _textDataHolder.getAssCommndsNames().add(showInputDialog);
+            syncData();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        String selected = jList1.getSelectedValue().toString();
+        _textDataHolder.getAssCommndsNames().remove(selected);
+        syncData();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -452,11 +552,15 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton _start1stScanButt;
     private javax.swing.JLabel _start2ndScanButt;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JList jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -464,5 +568,6 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     // End of variables declaration//GEN-END:variables
 }

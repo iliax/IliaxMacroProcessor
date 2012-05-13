@@ -1,0 +1,50 @@
+MACRO m1 [ x y]
+.begin: add
+
+  .WHILE [ $x > 0 ]
+
+    m2 y=$x
+
+   .DEC x
+   
+  .ENDW
+   
+  .IF [ $y == 2 ]
+    .SET y 3
+    .GOTO begin
+  ENDIF
+MEND
+
+MACRO m2 [ y=10 ]
+  print $y
+MEND
+
+
+m1 5 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###################
+add
+del
+print
+end
