@@ -90,13 +90,21 @@ public class ParsingUtils {
     public static int checkMacroGenHeader(String head){
         List<String> lexems = getLexems(head);
 
-        if(lexems.size() >= 3 && lexems.get(0).equals(MACRO_DEF) && lexems.get(2).startsWith("[")){
-            return 0;
-        } else if(lexems.size() >= 4 && lexems.get(1).equals(MACRO_DEF) && lexems.get(3).startsWith("[")){
-            return 1;
-        } else {
-           return -1;
+//        if(lexems.size() >= 3 && lexems.get(0).equals(MACRO_DEF) && lexems.get(2).startsWith("[")){
+//            return 0;
+//        } else if(lexems.size() >= 4 && lexems.get(1).equals(MACRO_DEF) && lexems.get(3).startsWith("[")){
+//            return 1;
+//        } else {
+//           return -1;
+//        }
+
+        if(lexems.size() >= 2){
+            if(isValidMacrosName(lexems.get(0)) && lexems.get(1).equalsIgnoreCase(MACRO_DEF)){
+                return 1;
+            }
         }
+
+        return -1;
     }
 
     public static boolean isValidMacrosName(String name){
@@ -201,6 +209,10 @@ public class ParsingUtils {
     }
 
     public static void checkIsStrValidAsseblerStr(String str, List<String> commands) throws RuntimeException {
+
+        if(str.trim().isEmpty()){
+            return;
+        }
 
         String err = "\n'"+str+"' - invalid ASSEBLER instruction";
 

@@ -10,16 +10,11 @@ import iliaxmacroprocessor.logic.MacroProcessor;
 import iliaxmacroprocessor.logic.Macros;
 import iliaxmacroprocessor.logic.ParsingUtils;
 import iliaxmacroprocessor.logic.TextDataHolder;
-import java.awt.FileDialog;
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.CloseAction;
-import javax.swing.plaf.basic.BasicTextUI.BasicCaret;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -347,6 +342,8 @@ public class MainForm extends javax.swing.JFrame {
         _textDataHolder = new TextDataHolder(file);
 
         _sourseTextField.setText(_textDataHolder.getText());
+        _sourseTextField.setCaretPosition(0);
+
 
         String [] tko = new String[_textDataHolder.getAssCommndsNames().size()+1];
         int i=0;

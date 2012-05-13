@@ -270,11 +270,6 @@ public class MacroProcessor {
     private LinkedList<Macros> currentMacrosesStack = new LinkedList<Macros>();
 
     private void processMacrosInjection(StringBuffer text, Macros macros, String begining){
-        /////////////////////////////////
-
-
-
-//        //////////////////////////////
         
         LOG.info("начало макроподстановки: " + macros.getName());
         tryLock();
@@ -418,8 +413,10 @@ public class MacroProcessor {
             if(enableUsingBuksBeforeVar){
                 if(lex.startsWith("$")){
                     varVal = currMacros.getVariables().getVariableVAlFromGlobalContext(lex.substring(1));
+                    LOG.info("заменяем " + lex+ " ее значением "+varVal);
                 } else if(lex.contains("$")){
                     varVal = lex.substring(0, lex.indexOf("$")) + currMacros.getVariables().getVariableVAlFromGlobalContext(lex.substring(lex.indexOf("$")+1));
+                    LOG.info("заменяем " + lex.substring(lex.indexOf("$")+1) + " ее значением "+varVal);
                 }
             } else {
                 varVal = currMacros.getVariables().getVariableVAlFromGlobalContext(lex);
@@ -504,13 +501,14 @@ public class MacroProcessor {
 
     private Macros parseMacrosHeader(String header, int macroWordNum){
          List<String> lexems = getLexems(header);
+         
 
-         if(textDataHolder.getAssCommndsNames().contains(lexems.get(macroWordNum+1))){
-             throw new RuntimeException("макрос не может называться как команда!: "+lexems.get(macroWordNum+1));
+         if(textDataHolder.getAssCommndsNames().contains(lexems.get(0))){
+             throw new RuntimeException("макрос не может называться как команда!: "+lexems.get(0));
          }
 
-         if( isValidMacrosName(lexems.get(macroWordNum+1))){
-            Macros newMacros = new Macros(lexems.get(macroWordNum+1), currentMacrosesStack.getLast());
+         if( isValidMacrosName(lexems.get(0))){
+            Macros newMacros = new Macros(lexems.get(0), currentMacrosesStack.getLast());
             return newMacros;
          }
 
@@ -555,7 +553,7 @@ public class MacroProcessor {
 
                                 List<String> mlexems = getLexems(macroStr);
                                 List<String> toApp = new ArrayList<String>(mlexems);
-
+                               
                                 for(int j=1; j < mlexems.size(); j++){
                                     if(isValidVariableName(mlexems.get(j))){
                                         if(lex.startsWith(mlexems.get(j))){
@@ -565,6 +563,7 @@ public class MacroProcessor {
                                         }
                                     }
                                 }
+                                
                                 macros.getStrings().set(i, Joiner.on(" ").join(toApp));
                             }
                             //
@@ -579,7 +578,9 @@ public class MacroProcessor {
         if(str.contains(LS)){
             checkIsStrValidAsseblerStr(str.substring(0, str.indexOf(LS)), textDataHolder.getAssCommndsNames());
         } else {
-            checkIsStrValidAsseblerStr(str, textDataHolder.getAssCommndsNames());
+            if(!str.trim().isEmpty()){
+                checkIsStrValidAsseblerStr(str, textDataHolder.getAssCommndsNames());
+            }
         }
         
         str = str.trim();

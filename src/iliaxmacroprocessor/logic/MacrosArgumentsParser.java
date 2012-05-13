@@ -17,14 +17,14 @@ public class MacrosArgumentsParser {
 
     /** парсит параметры при макроопределении */
     public void parseVariablesArea(String str, Macros currentMacros) {
-        if((!str.contains("[") || (!str.contains("]")))){
-            throw new RuntimeException("это не валидная область аргументов!");
-        }
 
-        String argsArea = str.substring(str.indexOf("[")+1, str.indexOf("]")).trim();
-        LOG.info("анализ аргументов: '"+argsArea+"'");
+        str = str.replace(",", " ");
 
-        List<String> lexems = ParsingUtils.getLexems(argsArea);
+        List<String> lexems = ParsingUtils.getLexems(str);
+        lexems.remove(0);
+        lexems.remove(0);
+        
+        LOG.info("анализ аргументов: "+lexems+"");
 
         for(String arg : lexems){
 
@@ -56,7 +56,14 @@ public class MacrosArgumentsParser {
             throw new RuntimeException("это не валидная область аргументов!");
         }*/
 
-        str = str.replace(m.getName().substring(1), "");        
+
+        if(m.getParentMacros() != Macros.ROOT_MACROS){
+            str = str.replace(m.getName().substring(m.getName().lastIndexOf(".")+1), "");
+        } else {
+            str = str.replace(m.getName().substring(1), "");
+        }
+
+        str = str.replace(",", " ");
 
         String argsArea = str.replace("[", "").replace("]", "").trim();
         List<String> lexems = ParsingUtils.getLexems(argsArea.trim());
@@ -78,7 +85,7 @@ public class MacrosArgumentsParser {
                         vs.setVariableValue(varCount, arg);
                         varCount++;
                     } else {
-                        throw new RuntimeException("too many args!");
+                        throw new RuntimeException("слишком много агрументов!");
                     }
                 } else {
                    throw new RuntimeException("position arg definition expected!");

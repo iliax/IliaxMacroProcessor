@@ -1,28 +1,27 @@
-MACRO m1 [x]
- .metka: add r1 x
-
-  .WHILE [ x > 0 ]
-   
-   metka: addr1 
-   m1: qwe
-   .DEC x
-   
-  ENDW
-
+m1 MACRO x,y,z=100
+	
 MEND
 
-
-MACRO m2 [x]
-
-add $x
-
-MEND
+m1 12,12
 
 
-m2 123
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 ###################
 add
+print
