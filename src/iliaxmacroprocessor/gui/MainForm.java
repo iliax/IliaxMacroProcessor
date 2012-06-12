@@ -157,14 +157,14 @@ public class MainForm extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(_macrosesList);
 
-        jLabel3.setText("Macroses:");
+        jLabel3.setText("Макросы:");
 
         _macrosStrings.setColumns(20);
         _macrosStrings.setEditable(false);
         _macrosStrings.setRows(5);
         jScrollPane4.setViewportView(_macrosStrings);
 
-        jLabel4.setText("Macros data:");
+        jLabel4.setText("Тело макроса:");
 
         _logField.setEditable(false);
         jScrollPane5.setViewportView(_logField);
@@ -275,8 +275,7 @@ public class MainForm extends javax.swing.JFrame {
                                         .addGap(6, 6, 6)
                                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
-                                        .addGap(6, 6, 6))))
+                                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -424,9 +423,13 @@ public class MainForm extends javax.swing.JFrame {
                     firstScanEnded = true;
                 } catch(IndexOutOfBoundsException ioobe){
                     LOG.info("ОШИБКА! НЕ ЗАКРЫТЫЙ БЛОК!");
+                    _endButton.setEnabled(false);
+                    _nextStepButton.setEnabled(false);
                     firstScanEnded = false;
                 } catch(Exception e){
                     LOG.info("ОШИБКА! "+e.getMessage());
+                    _endButton.setEnabled(false);
+                    _nextStepButton.setEnabled(false);
                     firstScanEnded = false;
                 }
             }

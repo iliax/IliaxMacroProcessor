@@ -120,16 +120,7 @@ public class Macros {
         for (String s : _strings) {
             str += "   " + s + "\n";
         }
-        str += "MEND \n" + "nested: ";
-        
-        if (_nestedMacroses.isEmpty()) {
-            str += "N0NE";
-        } else {
-            for (Macros m : _nestedMacroses) {
-                str += m.getName() + ", ";
-            }
-            str = str.substring(0, str.length() - 2);
-        }
+        str += "MEND \n";
 
         return str;
     }

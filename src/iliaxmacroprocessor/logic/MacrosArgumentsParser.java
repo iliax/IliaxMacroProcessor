@@ -56,12 +56,12 @@ public class MacrosArgumentsParser {
             throw new RuntimeException("это не валидная область аргументов!");
         }*/
 
-
         if(m.getParentMacros() != Macros.ROOT_MACROS){
-            str = str.replace(m.getName().substring(m.getName().lastIndexOf(".")+1), "");
+            str = str.replace(m.getName().substring(m.getName().lastIndexOf(".")+1), "@");
         } else {
-            str = str.replace(m.getName().substring(1), "");
+            str = str.replace(m.getName().substring(1), "@");
         }
+        str = str.substring(str.indexOf("@") + 1 );
 
         str = str.replace(",", " ");
 

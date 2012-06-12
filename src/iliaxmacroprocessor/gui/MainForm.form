@@ -97,8 +97,7 @@
                                       <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                                       <Component id="jButton2" min="-2" pref="47" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jButton3" pref="70" max="32767" attributes="0"/>
-                                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                      <Component id="jButton3" min="-2" pref="48" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -266,7 +265,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Macroses:"/>
+        <Property name="text" type="java.lang.String" value="&#x41c;&#x430;&#x43a;&#x440;&#x43e;&#x441;&#x44b;:"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane4">
@@ -287,7 +286,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Macros data:"/>
+        <Property name="text" type="java.lang.String" value="&#x422;&#x435;&#x43b;&#x43e; &#x43c;&#x430;&#x43a;&#x440;&#x43e;&#x441;&#x430;:"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane5">

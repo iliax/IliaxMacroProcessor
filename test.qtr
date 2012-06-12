@@ -1,46 +1,28 @@
 m1 MACRO x y 
-.beg:
 	.WHILE [$x > 0]
-		print x $x
-		.DEC x
-		.SET y 2
-		.WHILE [$y > 0]
-		  print ololo
-		  .DEC y
-		.IF [$x == 8]
-		  .SET x 0
-		  .GOTO end
-		.ENDIF
-		.ENDW
+	  print x $x
+	  .DEC x
+	  .SET y 2
+	  .WHILE [ $y > 0 ]
+	  print y $y
+	  .DEC y
+	  .ENDW
+		
+	  .GOTO_IF [ $x == 5 ] end
 	.ENDW
 
-.end: 
+.end: print end
 	
 MEND
 
 m2 MACRO x, y=1
-
  print $x
  print $y
-
 MEND
 
-m2 10, y=111
+m1 10,10
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+m2 1
 
 ###################
 add

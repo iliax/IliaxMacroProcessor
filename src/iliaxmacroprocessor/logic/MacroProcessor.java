@@ -85,7 +85,7 @@ public class MacroProcessor {
             tryLock();
 
             if(check != -1){
-                i = processMacroDefinition(i, check);
+                i = processMacroDefinition(i, check, _strings);
             } else {
                 LOG.info("пропускаем строку: "+_strings.get(i));
                 i++;
@@ -119,13 +119,13 @@ public class MacroProcessor {
     }
 
 
-    private int processMacroDefinition(int stringNum, int macroWordNum){
+    private int processMacroDefinition(int stringNum, int macroWordNum, List<String> strs){
 
         String contextPrefix = "";
         
         contextPrefix = currentMacrosesStack.getLast().getName()+".";
         
-        Macros newMacros = parseMacrosHeader(_strings.get(stringNum), macroWordNum);
+        Macros newMacros = parseMacrosHeader(strs.get(stringNum), macroWordNum);
 
         if(newMacros == null){
             throw new RuntimeException("невалидное имя макроса. str " + stringNum);
@@ -138,11 +138,12 @@ public class MacroProcessor {
 
         currentMacrosesStack.add(newMacros);
         
-        _macrosArgumentsParser.parseVariablesArea(_strings.get(stringNum), currentMacrosesStack.getLast());
+        _macrosArgumentsParser.parseVariablesArea(strs.get(stringNum), currentMacrosesStack.getLast());
 
         int i = stringNum + 1;
-        while( ! checkMacroGenEnding(_strings.get(i))){
-            String macroString = _strings.get(i);
+        int nested = 0;
+        while( ! checkMacroGenEnding(strs.get(i))){
+            String macroString = strs.get(i);
             
             int checkHeader = checkMacroGenHeader(macroString);
 
@@ -157,10 +158,45 @@ public class MacroProcessor {
 
                 i++;
             } else {
-                LOG.info("начало обработки вложенного макроса");
+                LOG.info("начало обработки вложенного макроса(не теперь)");
+
+                // i = passMacroDefinition(i);
+               
+                //i = processMacroDefinition(i, checkHeader) + 1;
                 
-                i = processMacroDefinition(i, checkHeader) + 1;
+                newMacros.getStrings().add(macroString);
+                nested++;
+                
+                i++;
             }
+
+            if(nested != 0){
+                if(checkMacroGenEnding(strs.get(i))){
+                    newMacros.getStrings().add(strs.get(i));
+                    nested--;
+                    i++;
+                }
+            }
+
+
+            //bullshit
+            if(nested != 0){
+                if(checkMacroGenEnding(strs.get(i))){
+                    newMacros.getStrings().add(strs.get(i));
+                    nested--;
+                    i++;
+                }
+            }
+
+            if(nested != 0){
+                if(checkMacroGenEnding(strs.get(i))){
+                    newMacros.getStrings().add(strs.get(i));
+                    nested--;
+                    i++;
+                }
+            }
+            //bullshit ends
+            
         }
 
         if(_macroses.contains(newMacros)){
@@ -269,20 +305,56 @@ public class MacroProcessor {
         return null;
     }
 
+
+    private void processInnerMacrosesDefinition(Macros macros) {
+        List<String> strs = macros.getStrings();
+        for(int i=0; i< strs.size(); i++){
+            String s = macros.getStrings().get(i);
+
+            s = replaceVarsByTheirValues(s, macros);
+
+            if(checkMacroGenHeader(s) != -1){
+                i = processMacroDefinition(i, 0, strs);
+            } else {
+                try {
+                    int check = processCommand(macros, i);
+                    i += check;
+                    continue;
+                } catch(NoCommandException e){
+                    //go on!
+                }   
+            } 
+        }
+    }
+
+
     private LinkedList<Macros> currentMacrosesStack = new LinkedList<Macros>();
 
     private void processMacrosInjection(StringBuffer text, Macros macros, String begining){
-        
+
         LOG.info("начало макроподстановки: " + macros.getName());
         tryLock();
-
+        
         currentMacrosesStack.add(macros);
-       
         _macrosArgumentsParser.setMacrosVars(begining, macros);
 
+        LOG.info("Определение вложенных макросов");
+        processInnerMacrosesDefinition(macros);
+        updateMAcrosesList();
+        
+       
         for(int i=0; i < macros.getStrings().size(); i++){
 
-            String s = macros.getStrings().get(i);
+            String s = macros.getStrings().get(i); 
+
+             s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast());
+
+            if(checkMacroGenHeader(s) != -1){
+                i = passNestedMacroDef(macros.getStrings(), i+1);
+                i--;
+                continue;
+            }
+
             LOG.info("обработка строки: " + s);
 
             try {
@@ -301,7 +373,7 @@ public class MacroProcessor {
                 //go on!
             }
 
-            s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast());
+           // s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast()); //TODO is it right&
 
             processMacroCall(s, text);
 
@@ -335,6 +407,8 @@ public class MacroProcessor {
 
         int i = currentStr +1;
 
+        
+
         if(ch == false){
             for(int i1 = currentStr + 1, j = 0; i1 < currMacros.getStrings().size(); i1++, j++){
                 if(currMacros.getStrings().get(i1).contains(END_WHILE)){
@@ -349,12 +423,20 @@ public class MacroProcessor {
             for(; i < currMacros.getStrings().size() ; i++){
                 String s = currMacros.getStrings().get(i);
 
+                
                 if(s.contains(END_WHILE)){
                     LOG.info("конец итерации WHILE");
                     tryLock();
-                    
-                    return -1; //чтобы остаться там же 
+                        return -1; //чтобы остаться там же
                 }
+
+                s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast());
+
+                  if(checkMacroGenHeader(s) != -1){
+                        i = passNestedMacroDef(currMacros.getStrings(), i+1);
+                        i--;
+                        continue;
+                  }
 
                 /////////////////////////////
                     try {
@@ -373,7 +455,7 @@ public class MacroProcessor {
                         //go on!
                     }
 
-                    s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast());
+                    //s = replaceVarsByTheirValues(s, currentMacrosesStack.getLast());
 
                     processMacroCall(s, text);
                //////////////////////////////////////////
@@ -536,8 +618,12 @@ public class MacroProcessor {
         LOG.debug(mess);
     }
 
+    private int stringsLimit = 150;
     public void appendText(String str){
         try{
+            if(--stringsLimit == 0){
+                throw new RuntimeException("слишком много строк!");
+            }
             _appendText(str);
         } catch(IndexOutOfBoundsException e){
             throw new NotRealIOOfBException();
@@ -616,4 +702,17 @@ public class MacroProcessor {
         _guiConfig.outTextField.setText(text.toString());
 
     }
+
+    private int passNestedMacroDef(List<String> strings, int i) {
+        while(!checkMacroGenEnding(strings.get(i))){
+            if(checkMacroGenHeader(strings.get(i)) != -1){
+                i = passNestedMacroDef(strings, i+1);
+                continue;
+            }
+            i++;
+        }
+
+        return i+1;
+    }
+    
 }

@@ -37,9 +37,8 @@ public class Main {
      */
     public static void main(String[] aArgs) throws Exception {
 
-        test();
-
         if (aArgs == null || aArgs.length == 0) {
+            
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     try {
@@ -93,40 +92,4 @@ public class Main {
         }
     }
 
-
-
-
-    
-
-    private static void test() {
-/*
-        int[] a = new int[]{ 32, 31, 34, 12, 0, -1 ,12 , 9};
-
-        System.out.print("Исходный Массив: ");
-        for (int i = 0; i < a.length; i++) {
-            System.out.print(a[i]+" ");
-        }
-        
-        int minIndex;
-        for (int i = 0; i < a.length - 1; i++ ) {
-            minIndex = i;
-
-            for (int j = i + 1; j < a.length; j++) {
-                if(a[j] < a[minIndex]){
-                    minIndex = j;
-                }
-            }
-
-            int temp = a[i];
-            a[i] = a[minIndex];
-            a[minIndex] = temp;
-        }
-        
-        System.out.print("\nОтсортированный Массив: ");
-        for (int i = 0; i < a.length; i++) {
-            System.out.print(a[i]+" ");
-        }
-        System.out.println();
-        System.exit(0);*/
-    }
 }

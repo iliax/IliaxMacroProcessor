@@ -1,15 +1,17 @@
 m1 MACRO x
 
  m2 MACRO x=1
+  print $x $x
+ MEND
+
+.SET x 1
+.GOTO_IF [ $x == 1 ] met
+
+ m2 MACRO x=1
   print $x
  MEND
 
-m2 x=$x
-
-.SET x 123
-.GOTO_IF [ $x > 123 ] end
-print ololo
-.end: print end
+.met: m2
 
 MEND
 
@@ -17,24 +19,6 @@ MEND
 m1 22
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ###################
 print
+add
