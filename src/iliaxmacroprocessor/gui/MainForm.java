@@ -11,6 +11,7 @@ import iliaxmacroprocessor.logic.Macros;
 import iliaxmacroprocessor.logic.ParsingUtils;
 import iliaxmacroprocessor.logic.TextDataHolder;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -50,8 +51,10 @@ public class MainForm extends javax.swing.JFrame {
         ConsoleAppenderImpl.addListener(new ConsoleAppenderImpl.LogEventAppendable() {
             @Override
             public void append(LoggingEvent aLogEvent) {
-                _logField.setText(_logField.getText() + aLogEvent.getMessage() + LS);
-                _logField.setCaretPosition(_logField.getText().length());
+               // _logField.setText(_logField.getText() + aLogEvent.getMessage() + LS);
+               // _logField.setCaretPosition(_logField.getText().length());
+                _logField.setText(aLogEvent.getMessage()+ LS + _logField.getText() );
+                _logField.setCaretPosition(0);
             }
         });
 
@@ -95,6 +98,7 @@ public class MainForm extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        byStepsCheckBox = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         _openMenuItem = new javax.swing.JMenuItem();
@@ -132,7 +136,7 @@ public class MainForm extends javax.swing.JFrame {
 
         jLabel2.setText("OUT:");
 
-        _start1stScanButt.setText("начать первый проход");
+        _start1stScanButt.setText("Первый проход");
         _start1stScanButt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _start1stScanButtActionPerformed(evt);
@@ -167,7 +171,7 @@ public class MainForm extends javax.swing.JFrame {
 
         jLabel5.setText("LOG:");
 
-        _endButton.setText("До конца прохода");
+        _endButton.setText("Второй проход");
         _endButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _endButtonActionPerformed(evt);
@@ -203,6 +207,13 @@ public class MainForm extends javax.swing.JFrame {
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
+            }
+        });
+
+        byStepsCheckBox.setText("по шагам");
+        byStepsCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                byStepsCheckBoxActionPerformed(evt);
             }
         });
 
@@ -244,8 +255,8 @@ public class MainForm extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(_start1stScanButt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(_nextStepButton)))
-                .addGap(9, 9, 9)
+                        .addComponent(_endButton)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -258,27 +269,28 @@ public class MainForm extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                         .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE))
-                                    .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE))
+                                    .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                         .addGap(6, 6, 6)
                                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
                                         .addGap(6, 6, 6))))
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(_endButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(_nextStepButton)
+                        .addGap(146, 146, 146)
                         .addComponent(_start2ndScanButt)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 259, Short.MAX_VALUE)
+                        .addGap(89, 89, 89)
+                        .addComponent(byStepsCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
@@ -317,9 +329,10 @@ public class MainForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(_start1stScanButt)
-                    .addComponent(_nextStepButton)
                     .addComponent(jButton1)
                     .addComponent(_start2ndScanButt)
+                    .addComponent(byStepsCheckBox)
+                    .addComponent(_nextStepButton)
                     .addComponent(_endButton))
                 .addContainerGap())
         );
@@ -373,11 +386,15 @@ public class MainForm extends javax.swing.JFrame {
         
     }//GEN-LAST:event_formWindowClosed
 
+    public static boolean firstScanEnded = false;
+
     private void _start1stScanButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__start1stScanButtActionPerformed
         if(_textDataHolder == null){
             JOptionPane.showMessageDialog(this, "no data to analyse");
             return;
         }
+
+        firstScanEnded = false;
 
         if(_workingThread != null && _workingThread.isAlive()){
             try {
@@ -402,15 +419,32 @@ public class MainForm extends javax.swing.JFrame {
             public void run() {
                 try {
                     macroProcessor.start1stScan();
+
+
+                    firstScanEnded = true;
                 } catch(IndexOutOfBoundsException ioobe){
                     LOG.info("ОШИБКА! НЕ ЗАКРЫТЫЙ БЛОК!");
+                    firstScanEnded = false;
                 } catch(Exception e){
                     LOG.info("ОШИБКА! "+e.getMessage());
+                    firstScanEnded = false;
                 }
             }
         };
         
+        firstScanEnded = false;
         _workingThread.start();
+
+        if(!byStepsCheckBox.isSelected()){
+
+              if(atomicBoolean.get() == false){
+                    atomicBoolean.set(true);
+                     synchronized(MacroProcessor.class){
+                        MacroProcessor.class.notifyAll();
+                    }
+                }
+              
+        }
 
         _nextStepButton.setEnabled(true);
         _endButton.setEnabled(true);
@@ -427,7 +461,7 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event__nextStepButtonActionPerformed
 
     private void _endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__endButtonActionPerformed
-    if(_workingThread != null){
+        if(_workingThread != null){
             if(atomicBoolean.get() == false){
                 atomicBoolean.set(true);
                  synchronized(MacroProcessor.class){
@@ -509,6 +543,10 @@ public class MainForm extends javax.swing.JFrame {
         syncData();
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void byStepsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_byStepsCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_byStepsCheckBoxActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -549,6 +587,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JTextPane _sourseTextField;
     private javax.swing.JButton _start1stScanButt;
     private javax.swing.JLabel _start2ndScanButt;
+    private javax.swing.JCheckBox byStepsCheckBox;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

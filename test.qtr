@@ -1,20 +1,31 @@
-m1 MACRO x,y,z=100
+m1 MACRO x y 
+.beg:
+	.WHILE [$x > 0]
+		print x $x
+		.DEC x
+		.SET y 2
+		.WHILE [$y > 0]
+		  print ololo
+		  .DEC y
+		.IF [$x == 8]
+		  .SET x 0
+		  .GOTO end
+		.ENDIF
+		.ENDW
+	.ENDW
 
-.WHILE [$x > 0]
+.end: 
+	
+MEND
 
- L1: add qq L1
- .DEC x
+m2 MACRO x, y=1
 
-.ENDW
+ print $x
+ print $y
 
 MEND
 
-m1 12,12
-
-
-
-
-
+m2 10, y=111
 
 
 
@@ -33,4 +44,5 @@ m1 12,12
 
 ###################
 add
+del
 print

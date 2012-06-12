@@ -1,12 +1,5 @@
- L1: add qq L1
- L1_: add qq L1
- L1__: add qq L1_
- L1___: add qq L1__
- L1____: add qq L1___
- L1_____: add qq L1____
- L1______: add qq L1_____
- L1_______: add qq L1______
- L1________: add qq L1_______
- L1_________: add qq L1________
- L1__________: add qq L1_________
- L1___________: add qq L1__________
+ print x 10
+ print ololo
+ print ololo
+ print x 9
+ print ololo

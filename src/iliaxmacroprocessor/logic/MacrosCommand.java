@@ -22,6 +22,8 @@ public class MacrosCommand {
     public static final String WHILE = ".WHILE";
     public static final String END_WHILE = ".ENDW";
 
+    public static final String GOTO_IF =".GOTO_IF";
+
     public static final String GOTO = ".GOTO";
 
     private static final Logger LOG = Logger.getLogger(MacrosCommand.class.getName());
@@ -98,6 +100,11 @@ public class MacrosCommand {
             return processGOTOCommand(context, lexems.get(1), currentMacrosLine);
         }
 
+         if(lexems.get(0).equals(GOTO_IF) && lexems.size() >= 3){
+            return processGOTOIFCommand(context, lexems.get(1), currentMacrosLine);
+        }
+
+
         throw new NoCommandException();
     }
 
@@ -132,6 +139,25 @@ public class MacrosCommand {
         }
     }
 
+    public static int processGOTOIFCommand(Macros context, String lbl, int currentMacrosLine){
+        String str = context.getStrings().get(currentMacrosLine);
+     
+        if((!str.contains("[")) || (!str.contains("]")) ){
+            new RuntimeException("услови GOTO_IF должно быть в [ ]");
+        }
+
+        String s  = MacroProcessor.replaceVarsByTheirValues(str, context);
+        boolean check = checkInequality(s.substring(s.indexOf("[")+1, s.indexOf("]")));
+
+        if(!check){ //WTF???
+            return 0;
+        } else {
+            return processGOTOCommand(context,
+                    s.substring(s.indexOf("]")+1).trim(), currentMacrosLine);
+        }
+
+    }
+
     private static int processGOTOCommand(Macros context, String lbl, int currentMacrosLine) {
 
         if(context.isLabelExist(lbl)){
@@ -140,7 +166,7 @@ public class MacrosCommand {
             return context.getLabels().get(lbl) - currentMacrosLine - 2;
         }
 
-        throw new RuntimeException("нет такой метки!: "+lbl);
+        throw new RuntimeException("нет такой метки!: '"+lbl+"'");
     }
 
     public static class NoCommandException extends Exception {}

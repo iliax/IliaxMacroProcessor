@@ -22,7 +22,7 @@ import static iliaxmacroprocessor.logic.MacrosCommand.*;
 public class MacroProcessor {
 
     // позволять рекурсивный вызов макроса
-    public static boolean enableRecursionMacrossCall = true;
+    public static boolean enableRecursionMacrossCall = false;
 
     // пользовать $ перед переменными
     public static boolean enableUsingBuksBeforeVar = true;
@@ -172,7 +172,8 @@ public class MacroProcessor {
         updateMAcrosesList();
         tryLock();
 
-        currentMacrosesStack.getLast().getParentMacros().getNestedMacroses().add(currentMacrosesStack.pollLast());
+        currentMacrosesStack.getLast()
+                .getParentMacros().getNestedMacroses().add(currentMacrosesStack.pollLast());
 
         return i;
     }
@@ -329,7 +330,8 @@ public class MacroProcessor {
 
         whileHeader = MacroProcessor.replaceVarsByTheirValues(whileHeader, currMacros);
 
-        boolean ch = checkInequality(whileHeader.substring(whileHeader.indexOf("[")+1, whileHeader.indexOf("]")));
+        boolean ch =
+                checkInequality(whileHeader.substring(whileHeader.indexOf("[")+1, whileHeader.indexOf("]")));
 
         int i = currentStr +1;
 
@@ -423,7 +425,10 @@ public class MacroProcessor {
                     varVal = currMacros.getVariables().getVariableVAlFromGlobalContext(lex.substring(1));
                     LOG.info("заменяем " + lex+ " ее значением "+varVal);
                 } else if(lex.contains("$")){
-                    varVal = lex.substring(0, lex.indexOf("$")) + currMacros.getVariables().getVariableVAlFromGlobalContext(lex.substring(lex.indexOf("$")+1));
+                    varVal = lex.substring(0,
+                            lex.indexOf("$")) +
+                            currMacros.getVariables().getVariableVAlFromGlobalContext
+                            (lex.substring(lex.indexOf("$")+1));
                     LOG.info("заменяем " + lex.substring(lex.indexOf("$")+1) + " ее значением "+varVal);
                 }
             } else {
