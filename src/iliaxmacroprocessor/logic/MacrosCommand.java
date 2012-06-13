@@ -57,6 +57,8 @@ public class MacrosCommand {
             return;
         }
 
+        val = replaceVarsByTheirValues(val, context);
+
         LOG.info("SET: устанавливаем значение '" + val + "' переменной " + varName);
         tryLock();
 

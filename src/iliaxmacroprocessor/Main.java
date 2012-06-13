@@ -21,7 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,7 +38,7 @@ public class Main {
 
         if (aArgs == null || aArgs.length == 0) {
             
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            for (javax.swing.UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     try {
                         UIManager.setLookAndFeel(info.getClassName());
@@ -60,9 +59,9 @@ public class Main {
 
             for (String s : args) {
                 if (s.startsWith("--out=")) {
-                    out = s.substring(s.lastIndexOf("--out="));
+                    out = s.substring(s.indexOf("=")+1);
                 } else if (s.startsWith("--in=")) {
-                    in = s.substring(s.lastIndexOf("--in="));
+                    in = s.substring(s.indexOf("=")+1);
                 }
                 if (s.equalsIgnoreCase("--showlog=false")) {
                     ConsoleAppenderImpl.APPEND_TO_CONSOLE = false;
@@ -72,7 +71,13 @@ public class Main {
             GuiConfig gc = new GuiConfig(new JTextPane(), new JTextPane(),
                     new JLabel(), new JButton(), new JButton(), new JList());
 
-            TextDataHolder textDataHolder = new TextDataHolder(new File(in));
+            TextDataHolder textDataHolder = null;
+            try{
+                textDataHolder = new TextDataHolder(new File(in));
+            }catch(RuntimeException r){
+                System.err.println("входного файла не существует! "+r.getMessage());
+                return;
+            }
 
             AtomicBoolean ab = new AtomicBoolean(true);
 

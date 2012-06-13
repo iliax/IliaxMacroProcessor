@@ -1,22 +1,40 @@
 m1 MACRO x
 
- m2 MACRO x=1
-  print $x $x
+ m2 MACRO y=1
+  print $y 100
  MEND
 
-.SET x 1
-.GOTO_IF [ $x == 1 ] met
+.SET x 2
+.GOTO_IF [ $x == 2 ] met
 
- m2 MACRO x=1
-  print $x
+ m2 MACRO y=1
+  print $y
  MEND
 
-.met: m2
+.met: 
+
+.SET z $x
+m2 y=$z
 
 MEND
 
 
 m1 22
+
+m1 323
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ###################

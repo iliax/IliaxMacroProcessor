@@ -339,6 +339,11 @@ public class MacroProcessor {
         _macrosArgumentsParser.setMacrosVars(begining, macros);
 
         LOG.info("Определение вложенных макросов");
+        for(Macros m : macros.getNestedMacroses()){
+            _macroses.remove(m);
+        }
+        macros.getNestedMacroses().clear();
+
         processInnerMacrosesDefinition(macros);
         updateMAcrosesList();
         

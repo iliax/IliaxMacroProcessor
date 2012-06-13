@@ -1,5 +1,2 @@
- print x 10
- print ololo
- print ololo
- print x 9
- print ololo
+ print 2 100
+ print 2 100

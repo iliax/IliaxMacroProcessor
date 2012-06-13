@@ -48,7 +48,7 @@ public class TextDataHolder {
         this.file = checkNotNull(file);
 
         if (!file.exists()) {
-            throw new RuntimeException("file does not exist!");
+            throw new RuntimeException("file does not exist! "+file.getAbsolutePath());
         }
 
     }
