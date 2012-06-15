@@ -81,20 +81,47 @@ public class MacrosCommand {
             return 0;
         }
 
+        if(isValidAssOrMacroName(lexems.get(0)) && lexems.get(1).equals(SET) && lexems.size() == 4){
+            _setVariableValue(lexems.get(2), lexems.get(3), context);
+            return 0;
+        }
+
+
         if(lexems.get(0).equals(INC) && lexems.size() == 2){
             _incVarValue(lexems.get(1), context, 1);
             return 0;
         }
+
+        if(isValidAssOrMacroName(lexems.get(0)) && lexems.get(1).equals(INC) && lexems.size() == 3){
+            _incVarValue(lexems.get(2), context, 1);
+            return 0;
+        }
+
 
         if(lexems.get(0).equals(DEC) && lexems.size() == 2){
             _incVarValue(lexems.get(1), context, -1);
             return 0;
         }
 
+        if(isValidAssOrMacroName(lexems.get(0)) &&  lexems.get(1).equals(DEC) && lexems.size() == 3){
+            _incVarValue(lexems.get(2), context, -1);
+            return 0;
+        }
+
+
         if(lexems.get(0).equals(IF) && lexems.size() >= 2){
             return _processIfCommand(currentMacrosLine, context);
         }
+        
+        if(isValidAssOrMacroName(lexems.get(0)) && lexems.get(1).equals(IF) && lexems.size() >= 3) {
+            return _processIfCommand(currentMacrosLine, context);
+        }
+
         if(lexems.get(0).equals(END_IF)){
+            return 0;
+        }
+
+        if(isValidAssOrMacroName(lexems.get(0)) && lexems.get(1).equals(END_IF)){
             return 0;
         }
 
@@ -102,12 +129,24 @@ public class MacrosCommand {
             return processGOTOCommand(context, lexems.get(1), currentMacrosLine);
         }
 
+        if(isValidAssOrMacroName(lexems.get(0)) && lexems.get(1).equals(GOTO) && lexems.size() >= 3){
+            return processGOTOCommand(context, lexems.get(2), currentMacrosLine);
+        }
+
          if(lexems.get(0).equals(GOTO_IF) && lexems.size() >= 3){
             return processGOTOIFCommand(context, lexems.get(1), currentMacrosLine);
         }
 
+        if(isValidAssOrMacroName(lexems.get(0)) && lexems.get(1).equals(GOTO_IF) && lexems.size() >= 4){
+            return processGOTOIFCommand(context, lexems.get(2), currentMacrosLine);
+        }
+
 
         throw new NoCommandException();
+    }
+
+    static boolean isValidAssOrMacroName(String str){
+        return isValidAssLabelName(str) || isValidAssLabelName(str);
     }
 
     public static int _processIfCommand(int currStr, Macros context )

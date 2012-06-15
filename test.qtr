@@ -4,11 +4,11 @@ m1 MACRO x y
 	  .DEC x
 	  .SET y 2
 	  .WHILE [ $y > 0 ]
-	  print y $y
+	  e2: print y $y
 	  .DEC y
 	  .ENDW
 		
-	  .GOTO_IF [ $x == 5 ] end
+	  .GOTO_IF [ $x == 1 ] end
 	.ENDW
 
 .end: print end
@@ -18,13 +18,11 @@ MEND
 m2 MACRO x, y=1
  print $x
  print $y
+
+
 MEND
 
-m1 10,10
-
-m2 1
-
-
+m1 6 1
 
 ###################
 add

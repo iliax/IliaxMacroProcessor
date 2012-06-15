@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.base.Splitter;
 import iliaxmacroprocessor.gui.GuiConfig;
 import com.google.common.base.Joiner;
+import iliaxmacroprocessor.gui.MainForm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -62,6 +63,9 @@ public class MacroProcessor {
     }
 
     public void start1stScan(){
+        MainForm.appends = 0;
+        stringsLimit = APPENDS_LIMIT;
+
         updateMAcrosesList();
 
         LOG.info("==================================");
@@ -158,8 +162,6 @@ public class MacroProcessor {
 
                 i++;
             } else {
-                LOG.info("начало обработки вложенного макроса(не теперь)");
-
                 // i = passMacroDefinition(i);
                
                 //i = processMacroDefinition(i, checkHeader) + 1;
@@ -234,6 +236,9 @@ public class MacroProcessor {
     }
 
     public void start2ndScan(){
+
+        stringsLimit = 0;
+
         LOG.info("начало 2го прохода");
         
         text = new StringBuffer();
@@ -271,8 +276,6 @@ public class MacroProcessor {
     }
 
     private int passMacroDefinition(int begin){
-        LOG.info("пропуск макроопределения...");
-
         //tryLock();
 
         int i = begin + 1;
@@ -338,7 +341,6 @@ public class MacroProcessor {
         currentMacrosesStack.add(macros);
         _macrosArgumentsParser.setMacrosVars(begining, macros);
 
-        LOG.info("Определение вложенных макросов");
         for(Macros m : macros.getNestedMacroses()){
             _macroses.remove(m);
         }
@@ -480,7 +482,10 @@ public class MacroProcessor {
     private void processMacroCall(String s, StringBuffer text){
         Macros m = checkMacroCall(s);
         if(m == null){
-            LOG.info("пишем строку: " + s);
+
+            //LOG.info("пишем строку: " + s);
+
+            
             appendText(s + LS);
             tryLock();
         } else {
@@ -623,10 +628,14 @@ public class MacroProcessor {
         LOG.debug(mess);
     }
 
-    private int stringsLimit = 150;
+
+    public static volatile int APPENDS_LIMIT = 100;
+
+    private int stringsLimit = 0;
+
     public void appendText(String str){
         try{
-            if(--stringsLimit == 0){
+            if(++stringsLimit == APPENDS_LIMIT){
                 throw new RuntimeException("слишком много строк!");
             }
             _appendText(str);
